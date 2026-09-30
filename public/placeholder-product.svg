@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500">
+  <rect width="400" height="500" fill="#FDF6F0"/>
+  <circle cx="200" cy="220" r="60" fill="#F3E5D8"/>
+  <path d="M160 220c0-22 18-40 40-40s40 18 40 40-18 40-40 40" fill="none" stroke="#EAC8A3" stroke-width="3"/>
+  <path d="M200 180c-8 0-15 3-20 8-5 5-8 12-8 20s3 15 8 20" fill="none" stroke="#C89F7B" stroke-width="3" stroke-linecap="round"/>
+  <text x="200" y="320" text-anchor="middle" font-family="serif" font-size="18" fill="#8B7355">Bloom Boutique</text>
+  <text x="200" y="350" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#A89888">Product image</text>
+</svg>
