@@ -9,7 +9,7 @@ A full-stack e-commerce website for Bloom Boutique, a Lebanon-based modest women
 - **Cash on delivery**: checkout collects customer details and creates orders — no payment gateway required
 - **Order notifications**: new orders email the store owner via Resend
 - **Image uploads**: product/category images upload to Vercel Blob in production (local `public/uploads` in development)
-- **Responsive design**: modest, girly, and cute aesthetic using the Bloom logo
+- **Responsive design**: modest, girly, and cute aesthetic using the Bloom logo.
 
 ## Tech Stack
 
