@@ -31,7 +31,8 @@ export async function POST(request: NextRequest) {
     await writeFile(filePath, buffer);
 
     return NextResponse.json({ url: `/uploads/${safeName}` });
-  } catch {
+  } catch (error) {
+    console.error("Upload failed:", error);
     return NextResponse.json({ error: "Failed to upload file" }, { status: 500 });
   }
 }

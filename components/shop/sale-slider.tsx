@@ -13,6 +13,7 @@ interface SaleSliderProps {
 
 export function SaleSlider({ products }: SaleSliderProps) {
   const [current, setCurrent] = useState(0);
+  const [paused, setPaused] = useState(false);
 
   const next = useCallback(() => {
     setCurrent((i) => (i + 1) % products.length);
@@ -23,10 +24,10 @@ export function SaleSlider({ products }: SaleSliderProps) {
   }, [products.length]);
 
   useEffect(() => {
-    if (products.length <= 1) return;
+    if (products.length <= 1 || paused) return;
     const interval = setInterval(next, 5000);
     return () => clearInterval(interval);
-  }, [products.length, next]);
+  }, [products.length, next, paused]);
 
   if (products.length === 0) {
     return (
@@ -37,7 +38,11 @@ export function SaleSlider({ products }: SaleSliderProps) {
   }
 
   return (
-    <div className="relative mx-auto w-full max-w-md lg:max-w-full">
+    <div
+      className="relative mx-auto w-full max-w-md lg:max-w-full"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
       <div className="overflow-hidden rounded-2xl bg-white shadow-xl">
         <div
           className="flex transition-transform duration-500 ease-out"
@@ -95,7 +100,7 @@ export function SaleSlider({ products }: SaleSliderProps) {
             variant="outline"
             size="icon"
             onClick={prev}
-            className="absolute left-2 top-1/2 h-9 w-9 -translate-y-1/2 rounded-full bg-white/80 backdrop-blur"
+            className="absolute left-2 top-1/2 h-9 w-9 -translate-y-1/2 rounded-full bg-white/80 backdrop-blur transition-transform hover:scale-110 active:scale-95"
             aria-label="Previous sale"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -104,7 +109,7 @@ export function SaleSlider({ products }: SaleSliderProps) {
             variant="outline"
             size="icon"
             onClick={next}
-            className="absolute right-2 top-1/2 h-9 w-9 -translate-y-1/2 rounded-full bg-white/80 backdrop-blur"
+            className="absolute right-2 top-1/2 h-9 w-9 -translate-y-1/2 rounded-full bg-white/80 backdrop-blur transition-transform hover:scale-110 active:scale-95"
             aria-label="Next sale"
           >
             <ChevronRight className="h-4 w-4" />

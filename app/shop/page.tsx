@@ -2,6 +2,8 @@ import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
 import { ShopContent } from "@/components/shop/shop-content";
 
+export const revalidate = 30;
+
 export const metadata = {
   title: "Shop | Bloom Boutique",
 };

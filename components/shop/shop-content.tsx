@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ProductCard } from "./product-card";
+import { Reveal } from "./reveal";
 import { Product, Category } from "@prisma/client";
 
 interface ShopContentProps {
@@ -121,8 +122,10 @@ export function ShopContent({ products, categories }: ShopContentProps) {
         </div>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
+          {filteredProducts.map((product, i) => (
+            <Reveal key={product.id} delay={Math.min(i, 7) * 60}>
+              <ProductCard product={product} />
+            </Reveal>
           ))}
         </div>
       )}

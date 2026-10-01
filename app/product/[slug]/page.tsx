@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { ProductDetail } from "@/components/shop/product-detail";
 
+export const revalidate = 30;
+
 interface ProductPageProps {
   params: Promise<{ slug: string }>;
 }

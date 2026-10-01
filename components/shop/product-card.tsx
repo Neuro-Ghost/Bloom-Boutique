@@ -11,8 +11,8 @@ export function ProductCard({ product }: ProductCardProps) {
   const imageUrl = images[0] || "/placeholder-product.svg";
 
   return (
-    <Link href={`/product/${product.slug}`} className="group block">
-      <div className="overflow-hidden rounded-2xl bg-white shadow-sm transition-shadow hover:shadow-md">
+    <Link href={`/product/${product.slug}`} className="group block h-full">
+      <div className="overflow-hidden rounded-2xl bg-white shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg">
         <div className="relative aspect-[3/4] w-full overflow-hidden bg-muted">
           <Image
             src={imageUrl}
