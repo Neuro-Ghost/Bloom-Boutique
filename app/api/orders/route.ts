@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
             })
             .join("");
           await resend.emails.send({
-            from: "Bloom Boutique <onboarding@resend.dev>",
+            from: "Bloom Boutique <orders@bloombyreem.store>",
             to: settings.contactEmail,
             subject: `New order ${order.id.slice(0, 8)} — $${order.total.toFixed(2)}`,
             html: `<div style="font-family:sans-serif;max-width:600px">
