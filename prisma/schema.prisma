@@ -28,6 +28,7 @@ model Product {
   images      String   @default("[]")
   sizes       String   @default("[]")
   colors      String   @default("[]")
+  colorImages String?
   stock       Int      @default(0)
   featured    Boolean  @default(false)
   active      Boolean  @default(true)

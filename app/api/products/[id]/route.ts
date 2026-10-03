@@ -12,6 +12,7 @@ const productSchema = z.object({
   images: z.array(z.string()).optional(),
   sizes: z.array(z.string()).optional(),
   colors: z.array(z.string()).optional(),
+  colorImages: z.record(z.string(), z.string()).optional(),
   stock: z.number().int().min(0).optional(),
   featured: z.boolean().optional(),
   active: z.boolean().optional(),
@@ -58,6 +59,7 @@ export async function PATCH(
     if (parsed.images) data.images = JSON.stringify(parsed.images);
     if (parsed.sizes) data.sizes = JSON.stringify(parsed.sizes);
     if (parsed.colors) data.colors = JSON.stringify(parsed.colors);
+    if (parsed.colorImages) data.colorImages = JSON.stringify(parsed.colorImages);
 
     const product = await prisma.product.update({
       where: { id },

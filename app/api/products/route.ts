@@ -12,6 +12,7 @@ const productSchema = z.object({
   images: z.array(z.string()).default([]),
   sizes: z.array(z.string()).default([]),
   colors: z.array(z.string()).default([]),
+  colorImages: z.record(z.string(), z.string()).optional(),
   stock: z.number().int().min(0).default(0),
   featured: z.boolean().default(false),
   active: z.boolean().default(true),
@@ -60,6 +61,9 @@ export async function POST(request: NextRequest) {
         images: JSON.stringify(parsed.images),
         sizes: JSON.stringify(parsed.sizes),
         colors: JSON.stringify(parsed.colors),
+        colorImages: parsed.colorImages
+          ? JSON.stringify(parsed.colorImages)
+          : undefined,
       },
       include: { category: true },
     });

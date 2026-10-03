@@ -22,6 +22,7 @@ export function ProductDetail({ product, relatedProducts }: ProductDetailProps) 
   const images = JSON.parse(product.images || "[]") as string[];
   const sizes = JSON.parse(product.sizes || "[]") as string[];
   const colors = JSON.parse(product.colors || "[]") as string[];
+  const colorImages = JSON.parse(product.colorImages || "{}") as Record<string, string>;
 
   const [selectedImage, setSelectedImage] = useState(images[0] || "/placeholder-product.svg");
   const [selectedSize, setSelectedSize] = useState(sizes[0] || "");
@@ -42,7 +43,7 @@ export function ProductDetail({ product, relatedProducts }: ProductDetailProps) 
       productId: product.id,
       name: product.name,
       price: product.price,
-      image: images[0] || "/placeholder-product.svg",
+      image: selectedImage,
       quantity,
       size: selectedSize || undefined,
       color: selectedColor || undefined,
@@ -145,7 +146,10 @@ export function ProductDetail({ product, relatedProducts }: ProductDetailProps) 
                 {colors.map((color) => (
                   <button
                     key={color}
-                    onClick={() => setSelectedColor(color)}
+                    onClick={() => {
+                      setSelectedColor(color);
+                      if (colorImages[color]) setSelectedImage(colorImages[color]);
+                    }}
                     className={`rounded-full border px-4 py-2 text-sm transition-all ${
                       selectedColor === color
                         ? "border-primary bg-primary text-primary-foreground"

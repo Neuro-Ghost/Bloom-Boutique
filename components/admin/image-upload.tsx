@@ -12,7 +12,7 @@ interface ImageUploadProps {
   onChange: (images: string[]) => void;
 }
 
-async function resizeImage(file: File): Promise<Blob> {
+export async function resizeImage(file: File): Promise<Blob> {
   try {
     const bitmap = await createImageBitmap(file);
     const maxDim = 1600;
