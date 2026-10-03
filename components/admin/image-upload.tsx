@@ -12,6 +12,35 @@ interface ImageUploadProps {
   onChange: (images: string[]) => void;
 }
 
+async function resizeImage(file: File): Promise<Blob> {
+  try {
+    const bitmap = await createImageBitmap(file);
+    const maxDim = 1600;
+    const scale = Math.min(1, maxDim / Math.max(bitmap.width, bitmap.height));
+    if (scale === 1 && file.size <= 800 * 1024) {
+      bitmap.close();
+      return file;
+    }
+    const width = Math.round(bitmap.width * scale);
+    const height = Math.round(bitmap.height * scale);
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    canvas.getContext("2d")!.drawImage(bitmap, 0, 0, width, height);
+    bitmap.close();
+    return await new Promise<Blob>((resolve, reject) =>
+      canvas.toBlob(
+        (blob) =>
+          blob ? resolve(blob) : reject(new Error("Image processing failed")),
+        "image/jpeg",
+        0.82
+      )
+    );
+  } catch {
+    return file;
+  }
+}
+
 export function ImageUpload({ images, onChange }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -21,10 +50,12 @@ export function ImageUpload({ images, onChange }: ImageUploadProps) {
     if (!file) return;
 
     setUploading(true);
-    const formData = new FormData();
-    formData.append("file", file);
 
     try {
+      const processed = await resizeImage(file);
+      const formData = new FormData();
+      formData.append("file", processed, "image.jpg");
+
       const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,

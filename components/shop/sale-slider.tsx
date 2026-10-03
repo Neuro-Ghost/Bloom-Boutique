@@ -31,7 +31,7 @@ export function SaleSlider({ products }: SaleSliderProps) {
 
   if (products.length === 0) {
     return (
-      <div className="relative mx-auto flex aspect-square w-full max-w-md items-center justify-center rounded-2xl bg-white p-8 shadow-xl lg:max-w-full">
+      <div className="relative mx-auto flex aspect-square w-full max-w-md items-center justify-center rounded-2xl bg-white p-8 shadow-xl lg:max-w-lg">
         <p className="text-muted-foreground">No active sales right now.</p>
       </div>
     );
@@ -39,7 +39,7 @@ export function SaleSlider({ products }: SaleSliderProps) {
 
   return (
     <div
-      className="relative mx-auto w-full max-w-md lg:max-w-full"
+      className="relative mx-auto w-full max-w-md lg:max-w-lg"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
