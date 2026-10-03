@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/auth";
 import { z } from "zod";
 
 const updateSchema = z.object({
@@ -12,6 +13,9 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
+
+  const unauthorized = await requireAdmin();
+  if (unauthorized) return unauthorized;
 
   try {
     const order = await prisma.order.findUnique({
@@ -34,6 +38,9 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
+
+  const unauthorized = await requireAdmin();
+  if (unauthorized) return unauthorized;
 
   try {
     const body = await request.json();
@@ -59,6 +66,9 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
+
+  const unauthorized = await requireAdmin();
+  if (unauthorized) return unauthorized;
 
   try {
     await prisma.order.delete({ where: { id } });

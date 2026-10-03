@@ -2,6 +2,7 @@ import NextAuth, { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
+import { NextResponse } from "next/server";
 import { prisma } from "./prisma";
 
 const credentialsSchema = z.object({
@@ -56,3 +57,8 @@ export const authConfig: NextAuthConfig = {
 };
 
 export const { handlers, auth, signIn, signOut } = NextAuth(authConfig);
+
+export async function requireAdmin() {
+  const session = await auth();
+  return session ? null : NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+}

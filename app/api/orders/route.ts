@@ -1,8 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/auth";
 import { getSettings } from "@/lib/settings";
 import { Resend } from "resend";
 import { z } from "zod";
+
+const escapeHtml = (s: string) =>
+  s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 
 const orderItemSchema = z.object({
   productId: z.string().min(1),
@@ -16,7 +25,10 @@ const orderItemSchema = z.object({
 const orderSchema = z.object({
   customerName: z.string().min(1),
   customerPhone: z.string().min(1),
-  customerEmail: z.string().email().optional().nullable(),
+  customerEmail: z.preprocess(
+    (v) => (v === "" ? undefined : v),
+    z.string().email().optional().nullable()
+  ),
   address: z.string().min(1),
   city: z.string().min(1),
   notes: z.string().optional(),
@@ -25,6 +37,9 @@ const orderSchema = z.object({
 });
 
 export async function GET(request: NextRequest) {
+  const unauthorized = await requireAdmin();
+  if (unauthorized) return unauthorized;
+
   const { searchParams } = new URL(request.url);
   const status = searchParams.get("status");
 
@@ -70,32 +85,33 @@ export async function POST(request: NextRequest) {
 
     try {
       if (process.env.RESEND_API_KEY) {
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        const itemsHtml = parsed.items
+          .map((item) => {
+            const variant = [
+              item.size ? `Size: ${escapeHtml(item.size)}` : "",
+              item.color ? `Color: ${escapeHtml(item.color)}` : "",
+            ]
+              .filter(Boolean)
+              .join(" · ");
+            return `<tr>
+              <td style="padding:6px 0">${escapeHtml(item.name)}${variant ? ` (${variant})` : ""}</td>
+              <td style="padding:6px 0;text-align:center">x${item.quantity}</td>
+              <td style="padding:6px 0;text-align:right">$${(item.price * item.quantity).toFixed(2)}</td>
+            </tr>`;
+          })
+          .join("");
+
         const settings = await getSettings();
         if (settings.contactEmail) {
-          const resend = new Resend(process.env.RESEND_API_KEY);
-          const itemsHtml = parsed.items
-            .map((item) => {
-              const variant = [
-                item.size ? `Size: ${item.size}` : "",
-                item.color ? `Color: ${item.color}` : "",
-              ]
-                .filter(Boolean)
-                .join(" · ");
-              return `<tr>
-                <td style="padding:6px 0">${item.name}${variant ? ` (${variant})` : ""}</td>
-                <td style="padding:6px 0;text-align:center">x${item.quantity}</td>
-                <td style="padding:6px 0;text-align:right">$${(item.price * item.quantity).toFixed(2)}</td>
-              </tr>`;
-            })
-            .join("");
           await resend.emails.send({
             from: "Bloom Boutique <orders@bloombyreem.store>",
             to: settings.contactEmail,
             subject: `New order ${order.id.slice(0, 8)} — $${order.total.toFixed(2)}`,
             html: `<div style="font-family:sans-serif;max-width:600px">
               <h2>New order received</h2>
-              <p><strong>${order.customerName}</strong> · ${order.customerPhone}${order.customerEmail ? ` · ${order.customerEmail}` : ""}</p>
-              <p>${order.address}, ${order.city}${order.notes ? `<br/>Notes: ${order.notes}` : ""}</p>
+              <p><strong>${escapeHtml(order.customerName)}</strong> · ${escapeHtml(order.customerPhone)}${order.customerEmail ? ` · ${escapeHtml(order.customerEmail)}` : ""}</p>
+              <p>${escapeHtml(order.address)}, ${escapeHtml(order.city)}${order.notes ? `<br/>Notes: ${escapeHtml(order.notes)}` : ""}</p>
               <table style="width:100%;border-collapse:collapse;border-top:1px solid #eee">
                 ${itemsHtml}
               </table>
@@ -103,9 +119,27 @@ export async function POST(request: NextRequest) {
             </div>`,
           });
         }
+
+        if (parsed.customerEmail) {
+          await resend.emails.send({
+            from: "Bloom Boutique <orders@bloombyreem.store>",
+            to: parsed.customerEmail,
+            subject: `Thank you for your order #${order.id.slice(0, 8)} — Bloom Boutique`,
+            html: `<div style="font-family:sans-serif;max-width:600px;margin:0 auto">
+              <h2 style="margin-bottom:4px">Thank you, ${escapeHtml(parsed.customerName)}!</h2>
+              <p style="color:#555">We received your order <strong>#${order.id.slice(0, 8)}</strong> and will contact you soon at ${escapeHtml(parsed.customerPhone)} to arrange delivery. Payment is cash on delivery.</p>
+              <table style="width:100%;border-collapse:collapse;border-top:1px solid #eee;margin-top:16px">
+                ${itemsHtml}
+              </table>
+              <p style="text-align:right"><strong>Total: $${order.total.toFixed(2)}</strong></p>
+              <p style="color:#777;font-size:13px;margin-top:16px">Delivering to: ${escapeHtml(parsed.address)}, ${escapeHtml(parsed.city)}</p>
+              <p style="color:#777;font-size:13px">Bloom Boutique · bloombyreem.store</p>
+            </div>`,
+          });
+        }
       }
     } catch (emailError) {
-      console.error("Order notification email failed:", emailError);
+      console.error("Order emails failed:", emailError);
     }
 
     return NextResponse.json(order, { status: 201 });

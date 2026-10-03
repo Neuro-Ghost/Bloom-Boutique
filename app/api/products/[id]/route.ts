@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/auth";
 import { z } from "zod";
 
 const productSchema = z.object({
@@ -46,6 +47,9 @@ export async function PATCH(
 ) {
   const { id } = await params;
 
+  const unauthorized = await requireAdmin();
+  if (unauthorized) return unauthorized;
+
   try {
     const body = await request.json();
     const parsed = productSchema.parse(body);
@@ -75,6 +79,9 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
+
+  const unauthorized = await requireAdmin();
+  if (unauthorized) return unauthorized;
 
   try {
     await prisma.product.delete({ where: { id } });
