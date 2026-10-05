@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { ShoppingBag, Menu, Search } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -11,6 +12,15 @@ import { useCart } from "./cart-provider";
 export function Navbar() {
   const { totalItems } = useCart();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const navLinks = [
     { href: "/", label: "Home" },
@@ -20,8 +30,14 @@ export function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
+    <header
+      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+        scrolled
+          ? "border-b border-border bg-background/80 shadow-sm backdrop-blur-md"
+          : "border-b border-transparent bg-background"
+      }`}
+    >
+      <div className="container mx-auto flex h-16 items-center gap-6 px-4 md:px-6 lg:grid lg:grid-cols-[1fr_auto_1fr]">
         <div className="flex items-center gap-4 lg:hidden">
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger
@@ -31,11 +47,14 @@ export function Navbar() {
                 </Button>
               }
             />
-            <SheetContent side="left" className="w-72">
-              <div className="flex flex-col gap-6 pt-6">
+            <SheetContent
+              side="left"
+              className="w-72 [&>button]:transition-transform [&>button]:duration-300 [&>button]:hover:rotate-90 [&>button]:hover:scale-110 [&>button]:hover:text-primary"
+            >
+              <div className="flex h-full flex-col pt-6">
                 <Link
                   href="/"
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 transition-opacity hover:opacity-80"
                   onClick={() => setMobileOpen(false)}
                 >
                   <Image
@@ -49,18 +68,38 @@ export function Navbar() {
                     Bloom Boutique
                   </span>
                 </Link>
-                <nav className="flex flex-col gap-3">
-                  {navLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      onClick={() => setMobileOpen(false)}
-                      className="text-base font-medium text-foreground hover:text-primary transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
+                <nav className="mt-10 flex flex-col">
+                  {navLinks.map((link, i) => {
+                    const active = link.href === pathname;
+                    return (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        onClick={() => setMobileOpen(false)}
+                        style={{ animationDelay: `${150 + i * 80}ms` }}
+                        className={`drawer-item group flex items-baseline gap-3 border-b border-border/60 py-3.5 transition-colors ${
+                          active
+                            ? "text-primary"
+                            : "text-foreground hover:text-primary"
+                        }`}
+                      >
+                        <span className="font-sans text-[10px] font-semibold tracking-widest text-primary/60">
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                        <span className="font-heading text-2xl">
+                          {link.label}
+                        </span>
+                        <span className="ml-auto h-px w-0 self-center bg-primary transition-all duration-300 group-hover:w-8" />
+                      </Link>
+                    );
+                  })}
                 </nav>
+                <p
+                  className="drawer-item mt-auto pb-6 font-heading text-sm italic text-muted-foreground"
+                  style={{ animationDelay: "500ms" }}
+                >
+                  Modest fashion, made to bloom.
+                </p>
               </div>
             </SheetContent>
           </Sheet>
@@ -72,7 +111,7 @@ export function Navbar() {
             alt="Bloom Boutique"
             width={40}
             height={40}
-            className="rounded-full"
+            className="rounded-full transition-transform duration-300 hover:scale-110"
           />
           <span className="hidden font-heading text-xl font-semibold tracking-tight sm:inline-block">
             Bloom Boutique
@@ -80,22 +119,33 @@ export function Navbar() {
         </Link>
 
         <nav className="hidden items-center gap-8 lg:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-sm font-medium text-foreground hover:text-primary transition-colors"
-            >
-              {link.label}
-            </Link>
-          ))}
+          {navLinks.map((link) => {
+            const active = link.href === pathname;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`relative text-sm font-medium transition-colors after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:rounded-full after:bg-primary after:transition-transform after:duration-300 hover:after:scale-x-100 ${
+                  active
+                    ? "text-primary after:scale-x-100"
+                    : "text-foreground/80 hover:text-foreground"
+                }`}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-2">
           <Link
             href="/shop"
             aria-label="Search products"
-            className={buttonVariants({ variant: "ghost", size: "icon" })}
+            className={buttonVariants({
+              variant: "ghost",
+              size: "icon",
+              className: "transition-transform duration-300 hover:scale-110",
+            })}
           >
             <Search className="h-5 w-5" />
           </Link>
@@ -105,12 +155,16 @@ export function Navbar() {
             className={buttonVariants({
               variant: "ghost",
               size: "icon",
-              className: "relative",
+              className:
+                "relative transition-transform duration-300 hover:scale-110",
             })}
           >
             <ShoppingBag className="h-5 w-5" />
             {totalItems > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
+              <span
+                key={totalItems}
+                className="badge-pop absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground"
+              >
                 {totalItems}
               </span>
             )}

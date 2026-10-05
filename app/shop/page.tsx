@@ -5,7 +5,10 @@ import { ShopContent } from "@/components/shop/shop-content";
 export const revalidate = 30;
 
 export const metadata = {
-  title: "Shop | Bloom Boutique",
+  title: "Shop All",
+  description:
+    "Browse every modest dress, top, bottom, jacket, and set at Bloom Boutique — curated feminine fashion, delivered across Lebanon.",
+  alternates: { canonical: "/shop" },
 };
 
 async function getShopData() {

@@ -12,8 +12,19 @@ export async function generateMetadata({ params }: ProductPageProps) {
   const { slug } = await params;
   const product = await prisma.product.findUnique({ where: { slug } });
   if (!product) return {};
+  const description =
+    product.description?.slice(0, 160) ||
+    `Discover ${product.name} at Bloom Boutique — modest, feminine fashion delivered across Lebanon.`;
+  const images = JSON.parse(product.images || "[]") as string[];
   return {
-    title: `${product.name} | Bloom Boutique`,
+    title: product.name,
+    description,
+    alternates: { canonical: `/product/${product.slug}` },
+    openGraph: {
+      title: product.name,
+      description,
+      images: images.length ? [{ url: images[0] }] : undefined,
+    },
   };
 }
 

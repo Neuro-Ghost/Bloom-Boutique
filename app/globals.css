@@ -149,3 +149,45 @@
     transition: none;
   }
 }
+
+@keyframes drawer-item-in {
+  from {
+    opacity: 0;
+    transform: translateX(-14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.drawer-item {
+  opacity: 0;
+  animation: drawer-item-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes badge-pop {
+  0% {
+    transform: scale(0.4);
+  }
+  60% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.badge-pop {
+  animation: badge-pop 0.35s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawer-item,
+  .badge-pop {
+    animation: none;
+  }
+  .drawer-item {
+    opacity: 1;
+  }
+}

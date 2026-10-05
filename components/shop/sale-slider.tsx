@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Product, Category } from "@prisma/client";
 
 interface SaleSliderProps {
@@ -25,9 +24,9 @@ export function SaleSlider({ products }: SaleSliderProps) {
 
   useEffect(() => {
     if (products.length <= 1 || paused) return;
-    const interval = setInterval(next, 5000);
-    return () => clearInterval(interval);
-  }, [products.length, next, paused]);
+    const timeout = setTimeout(next, 5000);
+    return () => clearTimeout(timeout);
+  }, [current, products.length, next, paused]);
 
   if (products.length === 0) {
     return (
@@ -96,37 +95,41 @@ export function SaleSlider({ products }: SaleSliderProps) {
 
       {products.length > 1 && (
         <>
-          <Button
-            variant="outline"
-            size="icon"
+          <button
             onClick={prev}
-            className="absolute left-2 top-1/2 h-9 w-9 -translate-y-1/2 rounded-full bg-white/80 backdrop-blur transition-transform hover:scale-110 active:scale-95"
             aria-label="Previous sale"
+            className="group absolute left-2 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center"
           >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/50 text-foreground shadow-sm backdrop-blur-sm transition-colors duration-300 group-hover:bg-white/90">
+              <ChevronLeft className="h-3.5 w-3.5" strokeWidth={1.5} />
+            </span>
+          </button>
+          <button
             onClick={next}
-            className="absolute right-2 top-1/2 h-9 w-9 -translate-y-1/2 rounded-full bg-white/80 backdrop-blur transition-transform hover:scale-110 active:scale-95"
             aria-label="Next sale"
+            className="group absolute right-2 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center"
           >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/50 text-foreground shadow-sm backdrop-blur-sm transition-colors duration-300 group-hover:bg-white/90">
+              <ChevronRight className="h-3.5 w-3.5" strokeWidth={1.5} />
+            </span>
+          </button>
 
-          <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-1.5">
+          <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2">
             {products.map((_, index) => (
               <button
                 key={index}
                 onClick={() => setCurrent(index)}
-                className={`h-2 w-2 rounded-full transition-all ${
-                  index === current
-                    ? "bg-primary w-4"
-                    : "bg-primary/30"
-                }`}
                 aria-label={`Go to slide ${index + 1}`}
-              />
+                className="group flex items-center justify-center p-2"
+              >
+                <span
+                  className={`block h-1.5 rounded-full transition-all duration-300 ${
+                    index === current
+                      ? "w-6 bg-primary"
+                      : "w-1.5 bg-primary/30 group-hover:bg-primary/60"
+                  }`}
+                />
+              </button>
             ))}
           </div>
         </>
