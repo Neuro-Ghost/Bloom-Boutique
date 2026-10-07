@@ -9,17 +9,28 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const images = JSON.parse(product.images || "[]") as string[];
   const imageUrl = images[0] || "/placeholder-product.svg";
+  const secondUrl = images[1];
 
   return (
     <Link href={`/product/${product.slug}`} className="group block h-full">
       <div className="overflow-hidden rounded-2xl bg-white shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg">
         <div className="relative aspect-[3/4] w-full overflow-hidden bg-muted">
-          <Image
-            src={imageUrl}
-            alt={product.name}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-          />
+          <div className="absolute inset-0 transition-transform duration-500 group-hover:scale-105">
+            <Image
+              src={imageUrl}
+              alt={product.name}
+              fill
+              className="object-cover transition-opacity duration-500 group-hover:opacity-0"
+            />
+            {secondUrl && (
+              <Image
+                src={secondUrl}
+                alt=""
+                fill
+                className="object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+              />
+            )}
+          </div>
           {product.onSale && (
             <span className="absolute left-3 top-3 rounded-full bg-primary px-2.5 py-1 text-xs font-medium text-primary-foreground">
               Sale

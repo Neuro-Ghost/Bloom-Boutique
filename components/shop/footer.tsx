@@ -44,6 +44,12 @@ export function Footer({ settings }: FooterProps) {
                 Shop All
               </Link>
               <Link
+                href="/about"
+                className="hover:text-primary transition-colors"
+              >
+                About
+              </Link>
+              <Link
                 href="/admin"
                 className="hover:text-primary transition-colors"
               >

@@ -25,7 +25,7 @@ export function Navbar() {
   const navLinks = [
     { href: "/", label: "Home" },
     { href: "/shop", label: "Shop" },
-    { href: "/#about", label: "About" },
+    { href: "/about", label: "About" },
     { href: "#contact", label: "Contact" },
   ];
 
@@ -51,7 +51,7 @@ export function Navbar() {
               side="left"
               className="w-72 [&>button]:transition-transform [&>button]:duration-300 [&>button]:hover:rotate-90 [&>button]:hover:scale-110 [&>button]:hover:text-primary"
             >
-              <div className="flex h-full flex-col pt-6">
+              <div className="flex h-full flex-col px-6 pt-6">
                 <Link
                   href="/"
                   className="flex items-center gap-2 transition-opacity hover:opacity-80"

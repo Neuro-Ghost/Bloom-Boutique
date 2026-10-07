@@ -78,7 +78,7 @@ export default async function HomePage() {
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
                 <Link
-                  href="#about"
+                  href="/about"
                   className={buttonVariants({
                     variant: "outline",
                     size: "lg",
@@ -223,34 +223,6 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* About */}
-      <section id="about" className="container mx-auto px-4 py-16 md:px-6">
-        <Reveal>
-          <div className="mx-auto max-w-3xl text-center">
-            <h2 className="font-heading text-3xl font-bold">About {settings.storeName}</h2>
-            <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-              {settings.storeName} is a Lebanon-based modest fashion destination
-              created for women who want to feel feminine, confident, and true to
-              themselves. Every piece is chosen with care — soft fabrics, graceful
-              silhouettes, and details that make you feel beautiful inside and out.
-            </p>
-            {settings.instagramUrl && (
-              <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
-                Follow our journey on Instagram{" "}
-                <a
-                  href={settings.instagramUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-medium text-primary hover:underline"
-                >
-                  @{settings.instagramUrl.replace(/\/$/, "").split("/").pop()}
-                </a>
-                .
-              </p>
-            )}
-          </div>
-        </Reveal>
-      </section>
     </>
   );
 }
