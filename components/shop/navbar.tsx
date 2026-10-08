@@ -54,7 +54,7 @@ export function Navbar() {
               <div className="flex h-full flex-col px-6 pt-6">
                 <Link
                   href="/"
-                  className="flex items-center gap-2 transition-opacity hover:opacity-80"
+                  className="flex min-h-11 items-center gap-2 py-1 transition-opacity hover:opacity-80"
                   onClick={() => setMobileOpen(false)}
                 >
                   <Image
@@ -105,7 +105,7 @@ export function Navbar() {
           </Sheet>
         </div>
 
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/" className="flex min-h-11 items-center gap-2">
           <Image
             src="/logo.png"
             alt="Bloom Boutique"

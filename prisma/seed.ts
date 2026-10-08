@@ -70,6 +70,14 @@ async function main() {
       stock: 12,
       featured: true,
       categoryId: dresses.id,
+      fabric: "95% polyester, 5% elastane",
+      careInstructions: "Hand wash cold\nDo not bleach\nIron on low",
+      measurements: [
+        { label: "Length", value: "115 cm" },
+        { label: "Sleeve", value: "58 cm" },
+      ],
+      variantStock: { "XL|Blush": 0, "XL|Beige": 0 },
+      soldOut: false,
     },
     {
       name: "Linen Palazzo Pants",
@@ -82,6 +90,11 @@ async function main() {
       stock: 20,
       featured: true,
       categoryId: bottoms.id,
+      fabric: "100% linen",
+      careInstructions: "Machine wash cold, hang to dry",
+      measurements: [{ label: "Inseam", value: "72 cm" }],
+      variantStock: null,
+      soldOut: false,
     },
     {
       name: "Floral Chiffon Blouse",
@@ -94,6 +107,11 @@ async function main() {
       stock: 15,
       featured: false,
       categoryId: tops.id,
+      fabric: "100% polyester chiffon",
+      careInstructions: "Hand wash cold, do not wring",
+      measurements: [],
+      variantStock: null,
+      soldOut: false,
     },
     {
       name: "Sage Knit Set",
@@ -107,6 +125,14 @@ async function main() {
       stock: 8,
       featured: true,
       categoryId: sets.id,
+      fabric: "70% acrylic, 30% wool",
+      careInstructions: "Hand wash cold\nDry flat",
+      measurements: [
+        { label: "Top length", value: "68 cm" },
+        { label: "Pants length", value: "100 cm" },
+      ],
+      variantStock: null,
+      soldOut: false,
     },
     {
       name: "Pleated Midi Skirt",
@@ -119,6 +145,11 @@ async function main() {
       stock: 18,
       featured: false,
       categoryId: bottoms.id,
+      fabric: "100% polyester",
+      careInstructions: "Machine wash cold, warm iron",
+      measurements: [],
+      variantStock: null,
+      soldOut: false,
     },
     {
       name: "Pearl Button Cardigan",
@@ -131,6 +162,11 @@ async function main() {
       stock: 10,
       featured: false,
       categoryId: tops.id,
+      fabric: "60% cotton, 40% acrylic",
+      careInstructions: "Hand wash cold, dry flat",
+      measurements: [],
+      variantStock: null,
+      soldOut: true,
     },
   ];
 
@@ -143,6 +179,10 @@ async function main() {
         images: JSON.stringify(["/placeholder-product.svg"]),
         sizes: JSON.stringify(product.sizes),
         colors: JSON.stringify(product.colors),
+        measurements: JSON.stringify(product.measurements),
+        variantStock: product.variantStock
+          ? JSON.stringify(product.variantStock)
+          : null,
       },
     });
   }

@@ -135,7 +135,7 @@ export default function AdminOrdersPage() {
                       value={order.status}
                       onValueChange={(v) => v && updateStatus(order.id, v)}
                     >
-                      <SelectTrigger className="h-8 w-[110px] rounded-lg text-xs">
+                      <SelectTrigger className="h-10 w-[110px] rounded-lg text-xs">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -149,6 +149,8 @@ export default function AdminOrdersPage() {
                     <Button
                       variant="ghost"
                       size="icon"
+                      className="size-10"
+                      aria-label="View order"
                       onClick={() => setSelectedOrder(order)}
                     >
                       <Eye className="h-4 w-4" />

@@ -10,6 +10,7 @@ import {
 
 export interface CartItem {
   productId: string;
+  slug?: string;
   name: string;
   price: number;
   image: string;
@@ -66,7 +67,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
       if (existingIndex >= 0) {
         const updated = [...prev];
-        updated[existingIndex].quantity += newItem.quantity;
+        updated[existingIndex] = {
+          ...updated[existingIndex],
+          ...newItem,
+          quantity: updated[existingIndex].quantity + newItem.quantity,
+        };
         return updated;
       }
 

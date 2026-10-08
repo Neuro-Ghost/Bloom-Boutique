@@ -75,9 +75,9 @@ export function ShopContent({ products, categories }: ShopContentProps) {
             className="rounded-full pl-10"
           />
         </div>
-        <div className="flex flex-wrap gap-3">
+        <div className="grid grid-cols-2 gap-3 md:flex md:flex-wrap">
           <Select value={category} onValueChange={(v) => setCategory(v || "all")}>
-            <SelectTrigger className="w-[160px] rounded-full">
+            <SelectTrigger className="w-full min-w-0 rounded-full md:w-[160px]">
               <SlidersHorizontal className="mr-2 h-4 w-4" />
               <SelectValue placeholder="Category" />
             </SelectTrigger>
@@ -92,7 +92,7 @@ export function ShopContent({ products, categories }: ShopContentProps) {
           </Select>
 
           <Select value={sort} onValueChange={(v) => setSort(v || "newest")}>
-            <SelectTrigger className="w-[160px] rounded-full">
+            <SelectTrigger className="w-full min-w-0 rounded-full md:w-[160px]">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>

@@ -84,15 +84,20 @@ export default async function AdminProductsPage() {
                       <Badge variant={product.active ? "default" : "outline"}>
                         {product.active ? "Active" : "Inactive"}
                       </Badge>
+                      {product.soldOut && (
+                        <Badge variant="destructive">Sold Out</Badge>
+                      )}
                     </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center">
                       <Link
                         href={`/admin/products/${product.id}`}
+                        aria-label={`Edit ${product.name}`}
                         className={buttonVariants({
                           variant: "ghost",
                           size: "icon",
+                          className: "size-10",
                         })}
                       >
                         <Pencil className="h-4 w-4" />

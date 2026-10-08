@@ -42,8 +42,8 @@ export default async function HomePage() {
     <>
       {/* Hero */}
       <section className="relative overflow-hidden bg-secondary/50">
-        <div className="container mx-auto px-4 py-20 md:px-6 md:py-28">
-          <div className="grid items-center gap-12 lg:grid-cols-2">
+        <div className="container mx-auto px-4 py-12 md:px-6 md:py-28">
+          <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
             <div className="space-y-6 text-center lg:text-left">
               <span className="inline-block animate-in fade-in slide-in-from-bottom-2 rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary duration-500">
                 New Collection
@@ -53,7 +53,7 @@ export default async function HomePage() {
                 style={{ animationDelay: "100ms" }}
               >
                 Dress Modestly,
-                <br />
+                <br className="hidden sm:block" />
                 <span className="italic text-primary">Bloom Beautifully</span>
               </h1>
               <p
@@ -71,7 +71,7 @@ export default async function HomePage() {
                   href="/shop"
                   className={buttonVariants({
                     size: "lg",
-                    className: "rounded-full",
+                    className: "w-full rounded-full sm:w-auto",
                   })}
                 >
                   Shop Now
@@ -82,7 +82,7 @@ export default async function HomePage() {
                   className={buttonVariants({
                     variant: "outline",
                     size: "lg",
-                    className: "rounded-full border-primary/30",
+                    className: "w-full rounded-full border-primary/30 sm:w-auto",
                   })}
                 >
                   Our Story

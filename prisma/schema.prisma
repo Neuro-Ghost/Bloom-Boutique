@@ -30,6 +30,11 @@ model Product {
   colors      String   @default("[]")
   colorImages String?
   stock       Int      @default(0)
+  variantStock String?
+  soldOut     Boolean  @default(false)
+  fabric      String?
+  careInstructions String?
+  measurements String?
   featured    Boolean  @default(false)
   active      Boolean  @default(true)
   onSale      Boolean  @default(false)

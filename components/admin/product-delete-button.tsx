@@ -23,7 +23,13 @@ export function ProductDeleteButton({ productId }: { productId: string }) {
   }
 
   return (
-    <Button variant="ghost" size="icon" onClick={handleDelete}>
+    <Button
+      variant="ghost"
+      size="icon"
+      className="size-10"
+      aria-label="Delete product"
+      onClick={handleDelete}
+    >
       <Trash2 className="h-4 w-4 text-destructive" />
     </Button>
   );

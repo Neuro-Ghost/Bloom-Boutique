@@ -7,6 +7,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCart } from "@/components/shop/cart-provider";
+import { MobileActionBar } from "@/components/shop/mobile-action-bar";
 
 export default function CartPage() {
   const { items, updateQuantity, removeItem, subtotal } = useCart();
@@ -35,7 +36,7 @@ export default function CartPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-12 md:px-6">
+    <div className="container mx-auto px-4 pt-8 pb-32 md:px-6 md:pt-12 lg:py-12">
       <h1 className="font-heading text-3xl font-bold">Shopping Cart</h1>
       <p className="mt-2 text-muted-foreground">
         {items.length} {items.length === 1 ? "item" : "items"} in your cart
@@ -52,18 +53,23 @@ export default function CartPage() {
                       src={item.image}
                       alt={item.name}
                       fill
+                      sizes="96px"
                       className="object-cover"
                     />
                   </div>
-                  <div className="flex flex-1 flex-col justify-between">
+                  <div className="flex min-w-0 flex-1 flex-col justify-between">
                     <div>
                       <h3 className="font-heading font-semibold">
-                        <Link
-                          href={`/product/${item.productId}`}
-                          className="hover:text-primary transition-colors"
-                        >
-                          {item.name}
-                        </Link>
+                        {item.slug ? (
+                          <Link
+                            href={`/product/${item.slug}`}
+                            className="transition-colors hover:text-primary"
+                          >
+                            {item.name}
+                          </Link>
+                        ) : (
+                          <span>{item.name}</span>
+                        )}
                       </h3>
                       <p className="mt-1 text-sm text-muted-foreground">
                         {item.size && `Size: ${item.size}`}
@@ -71,9 +77,11 @@ export default function CartPage() {
                         {item.color && `Color: ${item.color}`}
                       </p>
                     </div>
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
                       <div className="flex items-center rounded-full border border-border bg-white">
                         <button
+                          type="button"
+                          aria-label={`Decrease quantity of ${item.name}`}
                           onClick={() =>
                             updateQuantity(
                               item.productId,
@@ -82,14 +90,16 @@ export default function CartPage() {
                               item.color
                             )
                           }
-                          className="flex h-8 w-8 items-center justify-center text-muted-foreground hover:bg-muted"
+                          className="flex h-11 w-11 items-center justify-center rounded-l-full text-muted-foreground hover:bg-muted"
                         >
-                          <Minus className="h-3 w-3" />
+                          <Minus className="h-4 w-4" />
                         </button>
-                        <span className="flex h-8 w-8 items-center justify-center text-sm font-medium">
+                        <span className="flex h-11 w-9 items-center justify-center text-sm font-medium">
                           {item.quantity}
                         </span>
                         <button
+                          type="button"
+                          aria-label={`Increase quantity of ${item.name}`}
                           onClick={() =>
                             updateQuantity(
                               item.productId,
@@ -98,22 +108,23 @@ export default function CartPage() {
                               item.color
                             )
                           }
-                          className="flex h-8 w-8 items-center justify-center text-muted-foreground hover:bg-muted"
+                          className="flex h-11 w-11 items-center justify-center rounded-r-full text-muted-foreground hover:bg-muted"
                         >
-                          <Plus className="h-3 w-3" />
+                          <Plus className="h-4 w-4" />
                         </button>
                       </div>
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-2">
                         <span className="font-medium">
                           ${(item.price * item.quantity).toFixed(2)}
                         </span>
                         <Button
                           variant="ghost"
                           size="icon"
+                          aria-label={`Remove ${item.name}`}
                           onClick={() =>
                             removeItem(item.productId, item.size, item.color)
                           }
-                          className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                          className="text-muted-foreground hover:text-destructive"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -127,7 +138,7 @@ export default function CartPage() {
         </div>
 
         <div>
-          <Card className="sticky top-24">
+          <Card className="lg:sticky lg:top-24">
             <CardContent className="p-6 space-y-4">
               <h2 className="font-heading text-xl font-bold">Order Summary</h2>
               <div className="flex justify-between text-sm">
@@ -168,6 +179,13 @@ export default function CartPage() {
           </Card>
         </div>
       </div>
+
+      <MobileActionBar
+        summaryLabel="Total"
+        summaryValue={`$${total.toFixed(2)}`}
+        actionLabel="Checkout"
+        href="/checkout"
+      />
     </div>
   );
 }

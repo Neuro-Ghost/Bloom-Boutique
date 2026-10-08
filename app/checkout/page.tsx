@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCart } from "@/components/shop/cart-provider";
+import { MobileActionBar } from "@/components/shop/mobile-action-bar";
 import { toast } from "sonner";
 
 export default function CheckoutPage() {
@@ -90,12 +91,12 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-12 md:px-6">
+    <div className="container mx-auto px-4 pt-8 pb-36 md:px-6 md:pt-12 lg:py-12">
       <Link
         href="/cart"
         className={buttonVariants({
           variant: "ghost",
-          className: "mb-6 -ml-4 text-muted-foreground",
+          className: "mb-4 -ml-3 text-muted-foreground",
         })}
       >
         <ArrowLeft className="mr-2 h-4 w-4" />
@@ -108,7 +109,9 @@ export default function CheckoutPage() {
       </p>
 
       <form
+        id="checkout-form"
         onSubmit={handleSubmit}
+        aria-busy={isSubmitting}
         className="mt-8 grid gap-8 lg:grid-cols-3"
       >
         <div className="space-y-6 lg:col-span-2">
@@ -122,6 +125,9 @@ export default function CheckoutPage() {
                   <Label htmlFor="customerName">Full Name *</Label>
                   <Input
                     id="customerName"
+                    name="name"
+                    type="text"
+                    autoComplete="name"
                     required
                     value={form.customerName}
                     onChange={(e) =>
@@ -134,7 +140,10 @@ export default function CheckoutPage() {
                   <Label htmlFor="customerPhone">Phone Number *</Label>
                   <Input
                     id="customerPhone"
+                    name="tel"
                     type="tel"
+                    inputMode="tel"
+                    autoComplete="tel"
                     required
                     value={form.customerPhone}
                     onChange={(e) =>
@@ -148,7 +157,10 @@ export default function CheckoutPage() {
                 <Label htmlFor="customerEmail">Email (optional)</Label>
                 <Input
                   id="customerEmail"
+                  name="email"
                   type="email"
+                  inputMode="email"
+                  autoComplete="email"
                   value={form.customerEmail}
                   onChange={(e) =>
                     setForm({ ...form, customerEmail: e.target.value })
@@ -166,6 +178,8 @@ export default function CheckoutPage() {
                 <Label htmlFor="city">City *</Label>
                 <Input
                   id="city"
+                  name="address-level2"
+                  autoComplete="address-level2"
                   required
                   value={form.city}
                   onChange={(e) =>
@@ -178,24 +192,28 @@ export default function CheckoutPage() {
                 <Label htmlFor="address">Street Address *</Label>
                 <Textarea
                   id="address"
+                  name="street-address"
+                  autoComplete="street-address"
                   required
                   value={form.address}
                   onChange={(e) =>
                     setForm({ ...form, address: e.target.value })
                   }
-                  className="rounded-xl min-h-[100px]"
+                  className="min-h-[100px] rounded-xl"
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="notes">Order Notes (optional)</Label>
                 <Textarea
                   id="notes"
+                  name="notes"
+                  autoComplete="off"
                   value={form.notes}
                   onChange={(e) =>
                     setForm({ ...form, notes: e.target.value })
                   }
                   placeholder="Special delivery instructions..."
-                  className="rounded-xl"
+                  className="min-h-24 rounded-xl"
                 />
               </div>
             </CardContent>
@@ -203,7 +221,7 @@ export default function CheckoutPage() {
         </div>
 
         <div>
-          <Card className="sticky top-24">
+          <Card className="lg:sticky lg:top-24">
             <CardContent className="p-6 space-y-4">
               <h2 className="font-heading text-xl font-bold">Your Order</h2>
               <div className="max-h-60 space-y-3 overflow-y-auto pr-2">
@@ -214,6 +232,7 @@ export default function CheckoutPage() {
                         src={item.image}
                         alt={item.name}
                         fill
+                        sizes="56px"
                         className="object-cover"
                       />
                     </div>
@@ -283,6 +302,17 @@ export default function CheckoutPage() {
           </Card>
         </div>
       </form>
+
+      <MobileActionBar
+        summaryLabel="Total"
+        summaryValue={`$${total.toFixed(2)}`}
+        actionLabel="Place Order"
+        pendingLabel="Placing Order..."
+        pending={isSubmitting}
+        disabled={isSubmitting}
+        actionType="submit"
+        form="checkout-form"
+      />
     </div>
   );
 }

@@ -60,6 +60,7 @@ export function SaleSlider({ products }: SaleSliderProps) {
                     src={images[0] || "/placeholder-product.svg"}
                     alt={product.name}
                     fill
+                    sizes="(min-width: 1024px) 512px, (min-width: 448px) 448px, 100vw"
                     className="object-cover"
                   />
                   {product.onSale && (
@@ -120,7 +121,7 @@ export function SaleSlider({ products }: SaleSliderProps) {
                 key={index}
                 onClick={() => setCurrent(index)}
                 aria-label={`Go to slide ${index + 1}`}
-                className="group flex items-center justify-center p-2"
+                className="group flex h-11 w-11 items-center justify-center"
               >
                 <span
                   className={`block h-1.5 rounded-full transition-all duration-300 ${

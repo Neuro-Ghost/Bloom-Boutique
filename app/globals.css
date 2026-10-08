@@ -127,6 +127,18 @@
   html {
     @apply font-sans;
   }
+  a,
+  button,
+  input,
+  textarea,
+  select,
+  [role="button"] {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+.overflow-wrap-anywhere {
+  overflow-wrap: anywhere;
 }
 
 .reveal {

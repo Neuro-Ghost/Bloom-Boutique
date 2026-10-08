@@ -51,7 +51,7 @@ export default async function ContactPage() {
               <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
             </svg>
           </div>
-          <h2 className="mt-4 font-heading text-xl font-semibold">
+          <h2 className="mt-4 font-heading text-xl font-semibold overflow-wrap-anywhere">
             @{username}
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
@@ -78,7 +78,7 @@ export default async function ContactPage() {
               <p className="mt-1 font-medium">Email</p>
               <a
                 href={`mailto:${settings.contactEmail}`}
-                className="text-sm text-muted-foreground transition-colors hover:text-primary"
+                className="inline-flex min-h-11 items-center justify-center py-2 text-sm text-muted-foreground overflow-wrap-anywhere transition-colors hover:text-primary"
               >
                 {settings.contactEmail}
               </a>

@@ -5,7 +5,14 @@ import { usePathname } from "next/navigation";
 export function InstagramButton({ url }: { url: string }) {
   const pathname = usePathname();
 
-  if (pathname.startsWith("/admin")) return null;
+  if (
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/product/") ||
+    pathname.startsWith("/cart") ||
+    pathname.startsWith("/checkout")
+  ) {
+    return null;
+  }
 
   const username = url.replace(/\/$/, "").split("/").pop();
 
@@ -15,7 +22,7 @@ export function InstagramButton({ url }: { url: string }) {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Message us on Instagram"
-      className="fixed right-4 bottom-4 z-40 flex h-11 w-11 items-center justify-center rounded-full bg-foreground text-background shadow-md transition-transform duration-300 hover:scale-110"
+      className="fixed right-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-40 flex h-11 w-11 items-center justify-center rounded-full bg-foreground text-background shadow-md transition-transform duration-300 hover:scale-110"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

@@ -10,10 +10,10 @@ interface FooterProps {
 export function Footer({ settings }: FooterProps) {
   return (
     <footer className="border-t border-border bg-secondary/30">
-      <div className="container mx-auto px-4 py-12 md:px-6">
+      <div className="container mx-auto px-4 pt-12 pb-[calc(5rem+env(safe-area-inset-bottom))] md:px-6 lg:pb-12">
         <div className="grid gap-8 md:grid-cols-3">
           <div className="space-y-4">
-            <Link href="/" className="flex items-center gap-2">
+            <Link href="/" className="flex min-h-11 items-center gap-2">
               <Image
                 src="/logo.png"
                 alt={settings.storeName}
@@ -34,24 +34,27 @@ export function Footer({ settings }: FooterProps) {
           <div className="space-y-4">
             <h3 className="font-heading font-semibold">Quick Links</h3>
             <nav className="flex flex-col gap-2 text-sm text-muted-foreground">
-              <Link href="/" className="hover:text-primary transition-colors">
+              <Link
+                href="/"
+                className="flex min-h-11 items-center py-2 hover:text-primary transition-colors"
+              >
                 Home
               </Link>
               <Link
                 href="/shop"
-                className="hover:text-primary transition-colors"
+                className="flex min-h-11 items-center py-2 hover:text-primary transition-colors"
               >
                 Shop All
               </Link>
               <Link
                 href="/about"
-                className="hover:text-primary transition-colors"
+                className="flex min-h-11 items-center py-2 hover:text-primary transition-colors"
               >
                 About
               </Link>
               <Link
                 href="/contact"
-                className="hover:text-primary transition-colors"
+                className="flex min-h-11 items-center py-2 hover:text-primary transition-colors"
               >
                 Contact
               </Link>
@@ -66,7 +69,7 @@ export function Footer({ settings }: FooterProps) {
                   href={settings.instagramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 hover:text-primary transition-colors"
+                  className="flex min-h-11 min-w-0 items-center gap-2 py-2 overflow-wrap-anywhere hover:text-primary transition-colors"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -78,7 +81,7 @@ export function Footer({ settings }: FooterProps) {
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="h-4 w-4"
+                    className="h-4 w-4 shrink-0"
                   >
                     <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
                     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
@@ -90,15 +93,15 @@ export function Footer({ settings }: FooterProps) {
               {settings.contactEmail && (
                 <a
                   href={`mailto:${settings.contactEmail}`}
-                  className="flex items-center gap-2 hover:text-primary transition-colors"
+                  className="flex min-h-11 min-w-0 items-center gap-2 py-2 overflow-wrap-anywhere hover:text-primary transition-colors"
                 >
-                  <Mail className="h-4 w-4" />
+                  <Mail className="h-4 w-4 shrink-0" />
                   {settings.contactEmail}
                 </a>
               )}
               {settings.address && (
-                <span className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4" />
+                <span className="flex min-w-0 items-center gap-2 overflow-wrap-anywhere">
+                  <MapPin className="h-4 w-4 shrink-0" />
                   {settings.address}
                 </span>
               )}

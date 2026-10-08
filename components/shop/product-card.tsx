@@ -20,22 +20,33 @@ export function ProductCard({ product }: ProductCardProps) {
               src={imageUrl}
               alt={product.name}
               fill
-              className="object-cover transition-opacity duration-500 group-hover:opacity-0"
+              sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+              className={`object-cover transition-opacity duration-500 lg:group-hover:opacity-0 ${
+                product.soldOut ? "opacity-60" : ""
+              }`}
             />
-            {secondUrl && (
+            {secondUrl && !product.soldOut && (
               <Image
                 src={secondUrl}
                 alt=""
                 fill
-                className="object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                className="hidden object-cover opacity-0 transition-opacity duration-500 lg:block lg:group-hover:opacity-100"
               />
             )}
           </div>
-          {product.onSale && (
-            <span className="absolute left-3 top-3 rounded-full bg-primary px-2.5 py-1 text-xs font-medium text-primary-foreground">
-              Sale
-            </span>
-          )}
+          <div className="absolute left-3 top-3 flex flex-col items-start gap-1.5">
+            {product.onSale && (
+              <span className="rounded-full bg-primary px-2.5 py-1 text-xs font-medium text-primary-foreground">
+                Sale
+              </span>
+            )}
+            {product.soldOut && (
+              <span className="rounded-full border border-border bg-white px-2.5 py-1 text-xs font-medium text-foreground">
+                Sold Out
+              </span>
+            )}
+          </div>
         </div>
         <div className="p-4">
           <p className="text-xs text-muted-foreground">
@@ -44,7 +55,7 @@ export function ProductCard({ product }: ProductCardProps) {
           <h3 className="mt-1 font-heading text-base font-semibold text-foreground group-hover:text-primary transition-colors">
             {product.name}
           </h3>
-          <div className="mt-2 flex items-center gap-2">
+          <div className="mt-2 flex flex-wrap items-center gap-2">
             <span className="font-medium text-foreground">
               ${product.price.toFixed(2)}
             </span>
@@ -52,6 +63,9 @@ export function ProductCard({ product }: ProductCardProps) {
               <span className="text-sm text-muted-foreground line-through">
                 ${product.comparePrice.toFixed(2)}
               </span>
+            )}
+            {product.soldOut && (
+              <span className="text-xs text-muted-foreground">Sold out</span>
             )}
           </div>
         </div>

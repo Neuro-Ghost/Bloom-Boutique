@@ -185,6 +185,8 @@ export default function AdminCategoriesPage() {
                     <Button
                       variant="ghost"
                       size="icon"
+                      className="size-10"
+                      aria-label={`Edit ${category.name}`}
                       onClick={() => openEdit(category)}
                     >
                       <Pencil className="h-4 w-4" />
@@ -192,6 +194,8 @@ export default function AdminCategoriesPage() {
                     <Button
                       variant="ghost"
                       size="icon"
+                      className="size-10"
+                      aria-label={`Delete ${category.name}`}
                       onClick={() => handleDelete(category.id)}
                     >
                       <Trash2 className="h-4 w-4 text-destructive" />

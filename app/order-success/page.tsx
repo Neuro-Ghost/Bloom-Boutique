@@ -28,7 +28,7 @@ export default async function OrderSuccessPage({
           </p>
           {id && (
             <p className="mt-4 text-sm text-muted-foreground">
-              Order ID: <span className="font-medium text-foreground">{id}</span>
+              Order ID: <span className="font-medium overflow-wrap-anywhere text-foreground">{id}</span>
             </p>
           )}
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">

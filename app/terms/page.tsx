@@ -93,7 +93,7 @@ export default async function TermsPage() {
               href={`https://ig.me/m/${username}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-medium text-primary transition-colors hover:text-primary/80"
+              className="font-medium text-primary overflow-wrap-anywhere transition-colors hover:text-primary/80"
             >
               @{username}
             </a>
@@ -103,7 +103,7 @@ export default async function TermsPage() {
                 or email{" "}
                 <a
                   href={`mailto:${settings.contactEmail}`}
-                  className="font-medium text-primary transition-colors hover:text-primary/80"
+                  className="font-medium text-primary overflow-wrap-anywhere transition-colors hover:text-primary/80"
                 >
                   {settings.contactEmail}
                 </a>
