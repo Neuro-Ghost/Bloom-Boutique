@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
           await resend.emails.send({
             from: "Bloom Boutique <orders@bloombyreem.store>",
             to: settings.contactEmail,
-            subject: `New order ${order.id.slice(0, 8)} — $${order.total.toFixed(2)}`,
+            subject: `New order ${order.id.slice(0, 8)} ($${order.total.toFixed(2)})`,
             html: `<div style="font-family:sans-serif;max-width:600px">
               <h2>New order received</h2>
               <p><strong>${escapeHtml(order.customerName)}</strong> · ${escapeHtml(order.customerPhone)}${order.customerEmail ? ` · ${escapeHtml(order.customerEmail)}` : ""}</p>
@@ -124,7 +124,7 @@ export async function POST(request: NextRequest) {
           await resend.emails.send({
             from: "Bloom Boutique <orders@bloombyreem.store>",
             to: parsed.customerEmail,
-            subject: `Thank you for your order #${order.id.slice(0, 8)} — Bloom Boutique`,
+            subject: `Thank you for your order #${order.id.slice(0, 8)} from Bloom Boutique`,
             html: `<div style="font-family:sans-serif;max-width:600px;margin:0 auto">
               <h2 style="margin-bottom:4px">Thank you, ${escapeHtml(parsed.customerName)}!</h2>
               <p style="color:#555">We received your order <strong>#${order.id.slice(0, 8)}</strong> and will contact you soon at ${escapeHtml(parsed.customerPhone)} to arrange delivery. Payment is cash on delivery.</p>

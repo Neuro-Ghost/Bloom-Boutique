@@ -6,7 +6,6 @@ export interface SiteSettings {
   contactEmail: string;
   address: string;
   instagramUrl: string;
-  whatsappNumber: string;
 }
 
 const defaultSettings: SiteSettings = {
@@ -15,7 +14,6 @@ const defaultSettings: SiteSettings = {
   contactEmail: "",
   address: "Lebanon",
   instagramUrl: "https://www.instagram.com/bloom.byreem/",
-  whatsappNumber: "",
 };
 
 export async function getSettings(): Promise<SiteSettings> {

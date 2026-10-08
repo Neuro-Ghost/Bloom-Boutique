@@ -10,7 +10,7 @@ export const revalidate = 30;
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Bloom Boutique is a Lebanon-based modest fashion destination — elegant, feminine pieces for the modern woman who values grace and modesty.",
+    "Bloom Boutique is a Lebanon-based modest fashion destination with elegant, feminine pieces for the modern woman who values grace and modesty.",
 };
 
 const values = [
@@ -32,7 +32,7 @@ export default async function AboutPage() {
           <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
             {settings.storeName} is a Lebanon-based modest fashion destination
             created for women who want to feel feminine, confident, and true to
-            themselves. Every piece is chosen with care — soft fabrics, graceful
+            themselves. Every piece is chosen with care: soft fabrics, graceful
             silhouettes, and details that make you feel beautiful inside and
             out.
           </p>

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { Mail, MapPin } from "lucide-react";
 import { SiteSettings } from "@/lib/settings";
 
 interface FooterProps {
@@ -9,7 +9,7 @@ interface FooterProps {
 
 export function Footer({ settings }: FooterProps) {
   return (
-    <footer id="contact" className="border-t border-border bg-secondary/30">
+    <footer className="border-t border-border bg-secondary/30">
       <div className="container mx-auto px-4 py-12 md:px-6">
         <div className="grid gap-8 md:grid-cols-3">
           <div className="space-y-4">
@@ -50,10 +50,10 @@ export function Footer({ settings }: FooterProps) {
                 About
               </Link>
               <Link
-                href="/admin"
+                href="/contact"
                 className="hover:text-primary transition-colors"
               >
-                Admin Login
+                Contact
               </Link>
             </nav>
           </div>
@@ -96,17 +96,6 @@ export function Footer({ settings }: FooterProps) {
                   {settings.contactEmail}
                 </a>
               )}
-              {settings.whatsappNumber && (
-                <a
-                  href={`https://wa.me/${settings.whatsappNumber}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 hover:text-primary transition-colors"
-                >
-                  <Phone className="h-4 w-4" />
-                  {settings.whatsappNumber}
-                </a>
-              )}
               {settings.address && (
                 <span className="flex items-center gap-2">
                   <MapPin className="h-4 w-4" />
@@ -120,6 +109,13 @@ export function Footer({ settings }: FooterProps) {
         <div className="mt-12 border-t border-border pt-6 text-center text-xs text-muted-foreground">
           &copy; {new Date().getFullYear()} {settings.storeName}. All rights
           reserved.
+          <span className="mx-2">&middot;</span>
+          <Link
+            href="/terms"
+            className="underline transition-colors hover:text-primary"
+          >
+            Terms of Service
+          </Link>
         </div>
       </div>
     </footer>

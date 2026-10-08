@@ -151,7 +151,6 @@ async function main() {
     { key: "storeName", value: "Bloom Boutique" },
     { key: "storeTagline", value: "Where femininity meets modesty" },
     { key: "instagramUrl", value: "https://www.instagram.com/bloom.byreem/" },
-    { key: "whatsappNumber", value: "" },
     { key: "contactEmail", value: "hello@bloombyreem.com" },
     { key: "address", value: "Lebanon" },
   ];

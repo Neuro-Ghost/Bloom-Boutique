@@ -72,7 +72,7 @@ export default async function AdminProductsPage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    {product.category?.name || "—"}
+                    {product.category?.name || "-"}
                   </TableCell>
                   <TableCell>${product.price.toFixed(2)}</TableCell>
                   <TableCell>{product.stock}</TableCell>

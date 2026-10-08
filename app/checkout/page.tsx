@@ -104,7 +104,7 @@ export default function CheckoutPage() {
 
       <h1 className="font-heading text-3xl font-bold">Checkout</h1>
       <p className="mt-2 text-muted-foreground">
-        Cash on delivery — pay when your order arrives.
+        Cash on delivery. Pay when your order arrives.
       </p>
 
       <form
@@ -267,6 +267,18 @@ export default function CheckoutPage() {
               >
                 {isSubmitting ? "Placing Order..." : "Place Order"}
               </Button>
+
+              <p className="text-center text-xs leading-relaxed text-muted-foreground">
+                All sales are final. No cancellations, refunds, or exchanges.
+                By ordering you agree to our{" "}
+                <Link
+                  href="/terms"
+                  className="underline transition-colors hover:text-primary"
+                >
+                  Terms of Service
+                </Link>
+                .
+              </p>
             </CardContent>
           </Card>
         </div>

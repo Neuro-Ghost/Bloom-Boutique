@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: ProductPageProps) {
   if (!product) return {};
   const description =
     product.description?.slice(0, 160) ||
-    `Discover ${product.name} at Bloom Boutique — modest, feminine fashion delivered across Lebanon.`;
+    `Discover ${product.name} at Bloom Boutique. Modest, feminine fashion delivered across Lebanon.`;
   const images = JSON.parse(product.images || "[]") as string[];
   return {
     title: product.name,

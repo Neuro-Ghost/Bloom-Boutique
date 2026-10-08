@@ -12,7 +12,6 @@ interface Settings {
   storeName: string;
   storeTagline: string;
   instagramUrl: string;
-  whatsappNumber: string;
   contactEmail: string;
   address: string;
 }
@@ -21,7 +20,6 @@ const defaultSettings: Settings = {
   storeName: "Bloom Boutique",
   storeTagline: "Where femininity meets modesty",
   instagramUrl: "",
-  whatsappNumber: "",
   contactEmail: "",
   address: "",
 };
@@ -142,18 +140,6 @@ export default function AdminSettingsPage() {
                   setSettings({ ...settings, instagramUrl: e.target.value })
                 }
                 className="rounded-xl"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="whatsappNumber">WhatsApp Number</Label>
-              <Input
-                id="whatsappNumber"
-                value={settings.whatsappNumber}
-                onChange={(e) =>
-                  setSettings({ ...settings, whatsappNumber: e.target.value })
-                }
-                className="rounded-xl"
-                placeholder="e.g. 96170123456"
               />
             </div>
             <Button type="submit" className="rounded-full" disabled={saving}>

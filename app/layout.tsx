@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { CartProvider } from "@/components/shop/cart-provider";
 import { Navbar } from "@/components/shop/navbar";
 import { Footer } from "@/components/shop/footer";
+import { InstagramButton } from "@/components/shop/instagram-button";
 import { getSettings } from "@/lib/settings";
 import "./globals.css";
 
@@ -59,6 +60,7 @@ export default async function RootLayout({
           <main className="flex-1">{children}</main>
           <Footer settings={settings} />
           <Toaster position="top-center" richColors />
+          {settings.instagramUrl && <InstagramButton url={settings.instagramUrl} />}
         </CartProvider>
       </body>
     </html>
