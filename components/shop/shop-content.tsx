@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +20,13 @@ interface ShopContentProps {
   products: (Product & { category: Category | null })[];
   categories: Category[];
 }
+
+const pillClass = (active: boolean) =>
+  `flex min-h-11 shrink-0 items-center gap-1.5 rounded-full px-4 text-sm font-medium transition-colors ${
+    active
+      ? "bg-primary text-primary-foreground"
+      : "bg-secondary/60 text-foreground hover:bg-secondary"
+  }`;
 
 export function ShopContent({ products, categories }: ShopContentProps) {
   const searchParams = useSearchParams();
@@ -63,9 +70,19 @@ export function ShopContent({ products, categories }: ShopContentProps) {
     return result;
   }, [products, category, search, sort]);
 
+  const categoryCounts = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const p of products) {
+      if (p.category) {
+        map.set(p.category.slug, (map.get(p.category.slug) ?? 0) + 1);
+      }
+    }
+    return map;
+  }, [products]);
+
   return (
     <>
-      <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="mb-8 flex flex-col gap-4">
         <div className="relative w-full md:max-w-sm">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -75,24 +92,41 @@ export function ShopContent({ products, categories }: ShopContentProps) {
             className="rounded-full pl-10"
           />
         </div>
-        <div className="grid grid-cols-2 gap-3 md:flex md:flex-wrap">
-          <Select value={category} onValueChange={(v) => setCategory(v || "all")}>
-            <SelectTrigger className="w-full min-w-0 rounded-full md:w-[160px]">
-              <SlidersHorizontal className="mr-2 h-4 w-4" />
-              <SelectValue placeholder="Category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              {categories.map((c) => (
-                <SelectItem key={c.id} value={c.slug}>
+        <div className="flex items-center gap-2 md:gap-3">
+          <div
+            aria-label="Filter by category"
+            className="no-scrollbar -mx-4 flex flex-1 items-center gap-2 overflow-x-auto px-4 md:mx-0 md:flex-wrap md:px-0"
+          >
+            <button
+              type="button"
+              aria-pressed={category === "all"}
+              onClick={() => setCategory("all")}
+              className={pillClass(category === "all")}
+            >
+              All
+              <span className="text-xs opacity-60">{products.length}</span>
+            </button>
+            {categories.map((c) => {
+              const active = category === c.slug;
+              return (
+                <button
+                  key={c.id}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => setCategory(c.slug)}
+                  className={pillClass(active)}
+                >
                   {c.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+                  <span className="text-xs opacity-60">
+                    {categoryCounts.get(c.slug) ?? 0}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
 
           <Select value={sort} onValueChange={(v) => setSort(v || "newest")}>
-            <SelectTrigger className="w-full min-w-0 rounded-full md:w-[160px]">
+            <SelectTrigger className="w-[150px] shrink-0 rounded-full">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>

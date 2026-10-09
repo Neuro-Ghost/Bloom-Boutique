@@ -55,7 +55,7 @@ export function SaleSlider({ products }: SaleSliderProps) {
                 href={`/product/${product.slug}`}
                 className="w-full flex-shrink-0"
               >
-                <div className="relative aspect-[4/5] w-full overflow-hidden bg-muted">
+                <div className="relative aspect-square w-full overflow-hidden bg-muted sm:aspect-[4/5]">
                   <Image
                     src={images[0] || "/placeholder-product.svg"}
                     alt={product.name}
@@ -69,11 +69,11 @@ export function SaleSlider({ products }: SaleSliderProps) {
                     </span>
                   )}
                 </div>
-                <div className="p-5">
+                <div className="p-4 sm:p-5">
                   <p className="text-xs text-muted-foreground">
                     {product.category?.name || "Bloom Boutique"}
                   </p>
-                  <h3 className="mt-1 font-heading text-lg font-semibold">
+                  <h3 className="mt-1 font-heading text-base font-semibold sm:text-lg">
                     {product.name}
                   </h3>
                   <div className="mt-2 flex items-center gap-2">

@@ -23,7 +23,7 @@ const playfair = Playfair_Display({
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
-  const description = `Discover elegant, modest fashion at ${settings.storeName}. Curated dresses, tops, bottoms, and sets for the modern woman.`;
+  const description = `Discover elegant, modest fashion at ${settings.storeName}. Curated skirts, shirts, pants, and sets for the modern woman.`;
   return {
     metadataBase: new URL("https://www.bloombyreem.store"),
     title: {

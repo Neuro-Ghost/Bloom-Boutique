@@ -7,7 +7,7 @@ export const revalidate = 30;
 export const metadata = {
   title: "Shop All",
   description:
-    "Browse every modest dress, top, bottom, jacket, and set at Bloom Boutique. Curated feminine fashion, delivered across Lebanon.",
+    "Browse modest skirts, shirts, pants, jackets, and sets at Bloom Boutique. Curated feminine fashion, delivered across Lebanon.",
   alternates: { canonical: "/shop" },
 };
 
