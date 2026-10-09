@@ -54,7 +54,7 @@ export default async function HomePage() {
                 style={{ animationDelay: "100ms" }}
               >
                 Dress Modestly,
-                <br className="hidden sm:block" />
+                <br />
                 <span className="italic text-primary">Bloom Beautifully</span>
               </h1>
               <p

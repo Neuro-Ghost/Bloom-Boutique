@@ -37,16 +37,6 @@ export function ShopContent({ products, categories }: ShopContentProps) {
     [categories, products]
   );
 
-  const categoryCounts = useMemo(() => {
-    const map = new Map<string, number>();
-    for (const p of products) {
-      if (p.category) {
-        map.set(p.category.slug, (map.get(p.category.slug) ?? 0) + 1);
-      }
-    }
-    return map;
-  }, [products]);
-
   const filteredProducts = useMemo(() => {
     let result = [...products];
 
@@ -118,7 +108,7 @@ export function ShopContent({ products, categories }: ShopContentProps) {
   const activeCategory = categories.find((c) => c.slug === category);
 
   const pillClass = (active: boolean) =>
-    `relative z-10 flex min-h-11 shrink-0 items-center gap-1.5 rounded-full px-4 text-sm font-medium transition-colors ${
+    `relative z-10 flex min-h-11 shrink-0 items-center rounded-full px-4 text-sm font-medium transition-colors ${
       active ? "text-primary-foreground" : "text-foreground hover:text-primary"
     }`;
 
@@ -173,7 +163,6 @@ export function ShopContent({ products, categories }: ShopContentProps) {
           className={pillClass(category === "all")}
         >
           All
-          <span className="text-xs opacity-60">{products.length}</span>
         </button>
         {stockedCategories.map((c) => {
           const active = category === c.slug;
@@ -187,9 +176,6 @@ export function ShopContent({ products, categories }: ShopContentProps) {
               className={pillClass(active)}
             >
               {c.name}
-              <span className="text-xs opacity-60">
-                {categoryCounts.get(c.slug) ?? 0}
-              </span>
             </button>
           );
         })}
