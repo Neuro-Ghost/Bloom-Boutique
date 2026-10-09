@@ -135,7 +135,7 @@ export function ProductDetail({ product, relatedProducts }: ProductDetailProps) 
 
       <div className="grid gap-6 lg:grid-cols-2 lg:gap-10">
         {/* Images */}
-        <div className="space-y-4">
+        <div className="min-w-0 space-y-4">
           <div className="relative mx-auto aspect-[4/5] max-h-[56vh] w-full overflow-hidden rounded-2xl bg-muted lg:aspect-[3/4] lg:max-h-none">
             <Image
               src={selectedImage}
