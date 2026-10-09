@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+import { Metadata, Viewport } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import { ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
@@ -41,6 +41,10 @@ export async function generateMetadata(): Promise<Metadata> {
     },
   };
 }
+
+export const viewport: Viewport = {
+  viewportFit: "cover",
+};
 
 export default async function RootLayout({
   children,

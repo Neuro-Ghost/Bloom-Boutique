@@ -128,6 +128,7 @@ export async function POST(request: NextRequest) {
             html: `<div style="font-family:sans-serif;max-width:600px;margin:0 auto">
               <h2 style="margin-bottom:4px">Thank you, ${escapeHtml(parsed.customerName)}!</h2>
               <p style="color:#555">We received your order <strong>#${order.id.slice(0, 8)}</strong> and will contact you soon at ${escapeHtml(parsed.customerPhone)} to arrange delivery. Payment is cash on delivery.</p>
+              <p style="color:#555">All sales are final.</p>
               <table style="width:100%;border-collapse:collapse;border-top:1px solid #eee;margin-top:16px">
                 ${itemsHtml}
               </table>
