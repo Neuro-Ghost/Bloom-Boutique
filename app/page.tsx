@@ -27,7 +27,6 @@ async function getHomeData() {
 
   const categories = await prisma.category.findMany({
     where: { products: { some: { active: true } } },
-    take: 4,
     orderBy: { name: "asc" },
   });
 
