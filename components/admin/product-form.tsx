@@ -401,15 +401,15 @@ export function ProductForm({ product, categories }: ProductFormProps) {
                       <button
                         type="button"
                         onClick={() => setPickingFor(pickingFor === color ? null : color)}
-                        className={`shrink-0 rounded-lg p-1.5 transition-colors ${
+                        className={`shrink-0 flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
                           pickingFor === color
                             ? "bg-primary text-primary-foreground"
-                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                            : "bg-muted text-muted-foreground hover:bg-muted-foreground/10 hover:text-foreground"
                         }`}
                         aria-label={`Pick color from image for ${color}`}
-                        title="Pick from image"
                       >
-                        <Droplets className="h-4 w-4" />
+                        <Droplets className="h-3.5 w-3.5" />
+                        <span>Pick</span>
                       </button>
                     </div>
                   );
@@ -441,15 +441,15 @@ export function ProductForm({ product, categories }: ProductFormProps) {
                     <button
                       type="button"
                       onClick={() => setPickingFor(pickingFor === color ? null : color)}
-                      className={`shrink-0 rounded-lg p-1.5 transition-colors ${
+                      className={`shrink-0 flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
                         pickingFor === color
                           ? "bg-primary text-primary-foreground"
-                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                          : "bg-muted text-muted-foreground hover:bg-muted-foreground/10 hover:text-foreground"
                       }`}
                       aria-label={`Pick color from image for ${color}`}
-                      title="Pick from image"
                     >
-                      <Droplets className="h-4 w-4" />
+                      <Droplets className="h-3.5 w-3.5" />
+                      <span>Pick</span>
                     </button>
                   </div>
                 );
@@ -785,6 +785,8 @@ function PickerCanvas({
   onPick: (hex: string) => void;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [hoverColor, setHoverColor] = useState<string | null>(null);
+  const [hoverPos, setHoverPos] = useState<{ x: number; y: number } | null>(null);
 
   useLayoutEffect(() => {
     const canvas = canvasRef.current;
@@ -800,6 +802,24 @@ function PickerCanvas({
     img.src = src;
   }, [src]);
 
+  const samplePixel = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = Math.round(((e.clientX - rect.left) / rect.width) * canvas.width);
+    const y = Math.round(((e.clientY - rect.top) / rect.height) * canvas.height);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    try {
+      const pixel = ctx.getImageData(x, y, 1, 1).data;
+      const hex = `#${((1 << 24) + (pixel[0] << 16) + (pixel[1] << 8) + pixel[2]).toString(16).slice(1)}`;
+      setHoverColor(hex);
+      setHoverPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+    } catch {
+      // CORS error - ignore
+    }
+  };
+
   const handleClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!pickingFor) return;
     const canvas = canvasRef.current;
@@ -809,9 +829,13 @@ function PickerCanvas({
     const y = Math.round(((e.clientY - rect.top) / rect.height) * canvas.height);
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    const pixel = ctx.getImageData(x, y, 1, 1).data;
-    const hex = `#${((1 << 24) + (pixel[0] << 16) + (pixel[1] << 8) + pixel[2]).toString(16).slice(1)}`;
-    onPick(hex);
+    try {
+      const pixel = ctx.getImageData(x, y, 1, 1).data;
+      const hex = `#${((1 << 24) + (pixel[0] << 16) + (pixel[1] << 8) + pixel[2]).toString(16).slice(1)}`;
+      onPick(hex);
+    } catch {
+      toast.error("Cannot sample color - image may be from external source");
+    }
   };
 
   return (
@@ -819,9 +843,20 @@ function PickerCanvas({
       <canvas
         ref={canvasRef}
         onClick={handleClick}
-        className={`block w-full ${pickingFor ? "cursor-crosshair ring-2 ring-primary ring-offset-2" : "cursor-crosshair"}`}
+        onMouseMove={pickingFor ? samplePixel : undefined}
+        onMouseLeave={() => { setHoverColor(null); setHoverPos(null); }}
+        className={`block w-full ${pickingFor ? "cursor-crosshair ring-2 ring-primary ring-offset-2" : "cursor-default"}`}
         style={{ aspectRatio: "3/4" }}
       />
+      {hoverColor && hoverPos && pickingFor && (
+        <div
+          className="absolute pointer-events-none flex items-center gap-2 rounded-lg bg-black/80 px-2 py-1 text-xs text-white"
+          style={{ left: hoverPos.x + 10, top: hoverPos.y - 30 }}
+        >
+          <div className="h-4 w-4 rounded border border-white/30" style={{ backgroundColor: hoverColor }} />
+          <span className="font-mono">{hoverColor}</span>
+        </div>
+      )}
     </div>
   );
 }
