@@ -78,9 +78,9 @@ export async function POST(request: NextRequest) {
       if (!result.valid) {
         return NextResponse.json({ error: result.error }, { status: 400 });
       }
-      discountAmount = result.coupon.discountAmount;
-      couponCode = result.coupon.code;
-      couponId = result.coupon.id;
+      discountAmount = result.coupon!.discountAmount;
+      couponCode = result.coupon!.code;
+      couponId = result.coupon!.id;
     }
 
     const order = await prisma.order.create({

@@ -11,10 +11,11 @@ const updateSchema = z.object({
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const unauthorized = await requireAdmin();
   if (unauthorized) return unauthorized;
+  const { id } = await params;
 
   try {
     const body = await request.json();
@@ -25,7 +26,7 @@ export async function PATCH(
       const existing = await prisma.coupon.findUnique({
         where: { code: updates.code },
       });
-      if (existing && existing.id !== params.id) {
+      if (existing && existing.id !== id) {
         return NextResponse.json(
           { error: "Coupon code already exists" },
           { status: 400 }
@@ -34,7 +35,7 @@ export async function PATCH(
     }
 
     const coupon = await prisma.coupon.update({
-      where: { id: params.id },
+      where: { id },
       data: updates,
     });
 
@@ -56,14 +57,15 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const unauthorized = await requireAdmin();
   if (unauthorized) return unauthorized;
+  const { id } = await params;
 
   try {
     await prisma.coupon.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ success: true });
