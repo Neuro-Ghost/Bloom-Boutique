@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Category, Product } from "@prisma/client";
 import { Button } from "@/components/ui/button";
@@ -23,7 +23,7 @@ import { slugify } from "@/lib/slug";
 import { variantKey } from "@/lib/stock";
 import { resolveSwatch, parseDualHexes } from "@/lib/colors";
 import { toast } from "sonner";
-import { Plus, Upload, X } from "lucide-react";
+import { Plus, Upload, X, Droplets } from "lucide-react";
 
 interface ProductFormProps {
   product?: Product & { category: Category | null };
@@ -37,6 +37,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
   const isEditing = !!product;
   const [loading, setLoading] = useState(false);
   const [slugTouched, setSlugTouched] = useState(isEditing);
+  const [pickingFor, setPickingFor] = useState<string | null>(null);
   const [form, setForm] = useState({
     name: product?.name || "",
     slug: product?.slug || "",
@@ -286,6 +287,47 @@ export function ProductForm({ product, categories }: ProductFormProps) {
         </div>
       </div>
 
+      {form.colors.length > 0 && form.images.length > 0 && (
+        <div className="space-y-2">
+          {pickingFor && (
+            <div className="flex items-center gap-2 rounded-xl border-2 border-primary bg-primary/5 px-3 py-2">
+              <Droplets className="h-4 w-4 text-primary" />
+              <span className="text-sm font-medium">
+                Click any image to pick a color for <span className="text-primary">{pickingFor}</span>
+              </span>
+              <button
+                type="button"
+                onClick={() => setPickingFor(null)}
+                className="ml-auto text-xs text-muted-foreground hover:text-foreground"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {form.images.map((src, idx) => (
+              <PickerCanvas
+                key={idx}
+                src={src}
+                pickingFor={pickingFor}
+                onPick={(hex) => {
+                  if (!pickingFor) return;
+                  setForm((prev) => ({
+                    ...prev,
+                    colorHexes: { ...prev.colorHexes, [pickingFor]: hex },
+                  }));
+                  toast.success(`Picked ${hex} for ${pickingFor}`);
+                  setPickingFor(null);
+                }}
+              />
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Click the eyedropper next to a color below, then click any image to sample its color.
+          </p>
+        </div>
+      )}
+
       {form.colors.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
@@ -315,7 +357,9 @@ export function ProductForm({ product, categories }: ProductFormProps) {
                   return (
                     <div
                       key={color}
-                      className="flex items-center gap-3 rounded-xl border px-3 py-2"
+                      className={`flex items-center gap-3 rounded-xl border px-3 py-2 ${
+                        pickingFor === color ? "border-primary ring-1 ring-primary/30" : ""
+                      }`}
                     >
                       <div className="flex gap-1.5">
                         <input
@@ -351,14 +395,29 @@ export function ProductForm({ product, categories }: ProductFormProps) {
                           aria-label={`Second half color for ${color}`}
                         />
                       </div>
-                      <span className="text-sm">{color}</span>
+                      <span className="text-sm flex-1 truncate">{color}</span>
+                      <button
+                        type="button"
+                        onClick={() => setPickingFor(pickingFor === color ? null : color)}
+                        className={`shrink-0 rounded-lg p-1.5 transition-colors ${
+                          pickingFor === color
+                            ? "bg-primary text-primary-foreground"
+                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        }`}
+                        aria-label={`Pick color from image for ${color}`}
+                        title="Pick from image"
+                      >
+                        <Droplets className="h-4 w-4" />
+                      </button>
                     </div>
                   );
                 }
                 return (
                   <div
                     key={color}
-                    className="flex items-center gap-3 rounded-xl border px-3 py-2"
+                    className={`flex items-center gap-3 rounded-xl border px-3 py-2 ${
+                      pickingFor === color ? "border-primary ring-1 ring-primary/30" : ""
+                    }`}
                   >
                     <input
                       type="color"
@@ -375,7 +434,20 @@ export function ProductForm({ product, categories }: ProductFormProps) {
                       className="h-8 w-8 shrink-0 cursor-pointer rounded-md border border-black/10 p-0.5"
                       aria-label={`Swatch color for ${color}`}
                     />
-                    <span className="text-sm">{color}</span>
+                    <span className="text-sm flex-1 truncate">{color}</span>
+                    <button
+                      type="button"
+                      onClick={() => setPickingFor(pickingFor === color ? null : color)}
+                      className={`shrink-0 rounded-lg p-1.5 transition-colors ${
+                        pickingFor === color
+                          ? "bg-primary text-primary-foreground"
+                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      }`}
+                      aria-label={`Pick color from image for ${color}`}
+                      title="Pick from image"
+                    >
+                      <Droplets className="h-4 w-4" />
+                    </button>
                   </div>
                 );
               })}
@@ -695,6 +767,57 @@ function ColorImageSlot({
         onChange={handleFileChange}
         disabled={uploading}
         className="hidden"
+      />
+    </div>
+  );
+}
+
+function PickerCanvas({
+  src,
+  pickingFor,
+  onPick,
+}: {
+  src: string;
+  pickingFor: string | null;
+  onPick: (hex: string) => void;
+}) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useLayoutEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const img = document.createElement("img");
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext("2d");
+      if (ctx) ctx.drawImage(img, 0, 0);
+    };
+    img.src = src;
+  }, [src]);
+
+  const handleClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!pickingFor) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = Math.round(((e.clientX - rect.left) / rect.width) * canvas.width);
+    const y = Math.round(((e.clientY - rect.top) / rect.height) * canvas.height);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const pixel = ctx.getImageData(x, y, 1, 1).data;
+    const hex = `#${((1 << 24) + (pixel[0] << 16) + (pixel[1] << 8) + pixel[2]).toString(16).slice(1)}`;
+    onPick(hex);
+  };
+
+  return (
+    <div className="relative overflow-hidden rounded-xl border bg-muted">
+      <canvas
+        ref={canvasRef}
+        onClick={handleClick}
+        className={`block w-full ${pickingFor ? "cursor-crosshair ring-2 ring-primary ring-offset-2" : "cursor-crosshair"}`}
+        style={{ aspectRatio: "3/4" }}
       />
     </div>
   );
