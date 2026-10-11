@@ -49,6 +49,8 @@ model Order {
   id          String      @id @default(uuid())
   status      String      @default("pending")
   total       Float
+  deliveryZone String     @default("beirut")
+  deliveryFee Float       @default(0)
   customerName String
   customerPhone String
   customerEmail String?

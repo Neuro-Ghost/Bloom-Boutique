@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, Truck, Wallet } from "lucide-react";
+import { ArrowLeft, Wallet } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,12 +13,14 @@ import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCart } from "@/components/shop/cart-provider";
 import { MobileActionBar } from "@/components/shop/mobile-action-bar";
+import { DELIVERY_ZONES, DeliveryZone } from "@/lib/delivery";
 import { toast } from "sonner";
 
 export default function CheckoutPage() {
   const { items, subtotal, clearCart } = useCart();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deliveryZone, setDeliveryZone] = useState<DeliveryZone | null>(null);
   const [form, setForm] = useState({
     customerName: "",
     customerPhone: "",
@@ -28,7 +30,7 @@ export default function CheckoutPage() {
     notes: "",
   });
 
-  const deliveryFee = 0;
+  const deliveryFee = deliveryZone ? DELIVERY_ZONES[deliveryZone].fee : 0;
   const total = subtotal + deliveryFee;
 
   if (items.length === 0) {
@@ -50,6 +52,10 @@ export default function CheckoutPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!deliveryZone) {
+      toast.error("Please select a delivery zone");
+      return;
+    }
     setIsSubmitting(true);
 
     try {
@@ -58,7 +64,7 @@ export default function CheckoutPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
-          total,
+          deliveryZone,
           items: items.map((item) => ({
             productId: item.productId,
             name: item.name,
@@ -175,6 +181,32 @@ export default function CheckoutPage() {
             <CardContent className="p-6 space-y-4">
               <h2 className="font-heading text-xl font-bold">Delivery Address</h2>
               <div className="space-y-2">
+                <Label>Delivery Zone *</Label>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {(Object.keys(DELIVERY_ZONES) as DeliveryZone[]).map((zone) => {
+                    const selected = deliveryZone === zone;
+                    return (
+                      <button
+                        key={zone}
+                        type="button"
+                        aria-pressed={selected}
+                        onClick={() => setDeliveryZone(zone)}
+                        className={`flex min-h-11 items-center justify-between rounded-xl border px-4 py-2 text-sm transition-all ${
+                          selected
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border bg-white hover:border-primary/50"
+                        }`}
+                      >
+                        <span>{DELIVERY_ZONES[zone].label}</span>
+                        <span className="font-medium">
+                          ${DELIVERY_ZONES[zone].fee.toFixed(2)}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="city">City *</Label>
                 <Input
                   id="city"
@@ -257,7 +289,9 @@ export default function CheckoutPage() {
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Delivery</span>
-                <span className="font-medium">Free</span>
+                <span className="font-medium">
+                  {deliveryZone ? `$${deliveryFee.toFixed(2)}` : "Select zone"}
+                </span>
               </div>
               <div className="flex justify-between text-lg font-bold">
                 <span>Total</span>
@@ -282,7 +316,7 @@ export default function CheckoutPage() {
                 type="submit"
                 className="w-full rounded-full"
                 size="lg"
-                disabled={isSubmitting}
+                disabled={isSubmitting || !deliveryZone}
               >
                 {isSubmitting ? "Placing Order..." : "Place Order"}
               </Button>
@@ -309,7 +343,7 @@ export default function CheckoutPage() {
         actionLabel="Place Order"
         pendingLabel="Placing Order..."
         pending={isSubmitting}
-        disabled={isSubmitting}
+        disabled={isSubmitting || !deliveryZone}
         actionType="submit"
         form="checkout-form"
       />

@@ -4,6 +4,7 @@ import { requireAdmin } from "@/lib/auth";
 import { getSettings } from "@/lib/settings";
 import { Resend } from "resend";
 import { z } from "zod";
+import { DELIVERY_ZONES } from "@/lib/delivery";
 
 const escapeHtml = (s: string) =>
   s
@@ -33,7 +34,7 @@ const orderSchema = z.object({
   city: z.string().min(1),
   notes: z.string().optional(),
   items: z.array(orderItemSchema).min(1),
-  total: z.number().positive(),
+  deliveryZone: z.enum(["beirut", "outside"]),
 });
 
 export async function GET(request: NextRequest) {
@@ -60,6 +61,12 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const parsed = orderSchema.parse(body);
 
+    const itemsTotal = parsed.items.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+    const deliveryFee = DELIVERY_ZONES[parsed.deliveryZone].fee;
+
     const order = await prisma.order.create({
       data: {
         customerName: parsed.customerName,
@@ -68,7 +75,9 @@ export async function POST(request: NextRequest) {
         address: parsed.address,
         city: parsed.city,
         notes: parsed.notes,
-        total: parsed.total,
+        deliveryZone: parsed.deliveryZone,
+        deliveryFee,
+        total: itemsTotal + deliveryFee,
         items: {
           create: parsed.items.map((item) => ({
             productId: item.productId,
@@ -115,6 +124,7 @@ export async function POST(request: NextRequest) {
               <table style="width:100%;border-collapse:collapse;border-top:1px solid #eee">
                 ${itemsHtml}
               </table>
+              <p style="text-align:right;color:#555">Subtotal: $${itemsTotal.toFixed(2)}<br/>Delivery (${escapeHtml(DELIVERY_ZONES[parsed.deliveryZone].label)}): $${deliveryFee.toFixed(2)}</p>
               <p style="text-align:right"><strong>Total: $${order.total.toFixed(2)}</strong></p>
             </div>`,
           });
@@ -132,6 +142,7 @@ export async function POST(request: NextRequest) {
               <table style="width:100%;border-collapse:collapse;border-top:1px solid #eee;margin-top:16px">
                 ${itemsHtml}
               </table>
+              <p style="text-align:right;color:#555">Subtotal: $${itemsTotal.toFixed(2)}<br/>Delivery (${escapeHtml(DELIVERY_ZONES[parsed.deliveryZone].label)}): $${deliveryFee.toFixed(2)}</p>
               <p style="text-align:right"><strong>Total: $${order.total.toFixed(2)}</strong></p>
               <p style="color:#777;font-size:13px;margin-top:16px">Delivering to: ${escapeHtml(parsed.address)}, ${escapeHtml(parsed.city)}</p>
               <p style="color:#777;font-size:13px">Bloom Boutique · bloombyreem.store</p>

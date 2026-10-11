@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { Order, OrderItem, Product } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -29,6 +28,7 @@ import {
 import { format } from "date-fns";
 import { Eye } from "lucide-react";
 import { toast } from "sonner";
+import { DELIVERY_ZONES, DeliveryZone } from "@/lib/delivery";
 
 type OrderWithItems = Order & {
   items: (OrderItem & { product: Product })[];
@@ -226,7 +226,18 @@ export default function AdminOrdersPage() {
                   ))}
                 </div>
               </div>
-              <div className="flex justify-between border-t pt-4">
+              <div className="flex justify-between border-t pt-4 text-sm">
+                <span className="text-muted-foreground">
+                  Delivery (
+                  {DELIVERY_ZONES[selectedOrder.deliveryZone as DeliveryZone]
+                    ?.label ?? selectedOrder.deliveryZone}
+                  )
+                </span>
+                <span className="font-medium">
+                  ${selectedOrder.deliveryFee.toFixed(2)}
+                </span>
+              </div>
+              <div className="flex justify-between">
                 <span className="font-medium">Total</span>
                 <span className="font-bold">
                   ${selectedOrder.total.toFixed(2)}
