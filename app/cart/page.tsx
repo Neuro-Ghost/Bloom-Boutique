@@ -12,9 +12,6 @@ import { MobileActionBar } from "@/components/shop/mobile-action-bar";
 export default function CartPage() {
   const { items, updateQuantity, removeItem, subtotal } = useCart();
 
-  const deliveryFee: number = 0;
-  const total = subtotal + deliveryFee;
-
   if (items.length === 0) {
     return (
       <div className="container mx-auto flex flex-col items-center justify-center px-4 py-24 text-center md:px-6">
@@ -145,16 +142,10 @@ export default function CartPage() {
                 <span className="text-muted-foreground">Subtotal</span>
                 <span className="font-medium">${subtotal.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Delivery</span>
-                <span className="font-medium">
-                  {deliveryFee === 0 ? "Free" : `$${deliveryFee.toFixed(2)}`}
-                </span>
-              </div>
               <Separator />
               <div className="flex justify-between text-lg font-bold">
                 <span>Total</span>
-                <span>${total.toFixed(2)}</span>
+                <span>${subtotal.toFixed(2)}</span>
               </div>
               <Link
                 href="/checkout"
@@ -182,7 +173,7 @@ export default function CartPage() {
 
       <MobileActionBar
         summaryLabel="Total"
-        summaryValue={`$${total.toFixed(2)}`}
+        summaryValue={`$${subtotal.toFixed(2)}`}
         actionLabel="Checkout"
         href="/checkout"
       />

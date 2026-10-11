@@ -100,6 +100,43 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Featured Products */}
+      {featuredProducts.length > 0 && (
+        <section className="bg-secondary/20 py-16">
+          <div className="container mx-auto px-4 md:px-6">
+            <Reveal>
+              <div className="mb-10 flex items-end justify-between">
+                <div>
+                  <h2 className="font-heading text-3xl font-bold">
+                    Featured Pieces
+                  </h2>
+                  <p className="mt-2 font-heading italic text-muted-foreground">
+                    Handpicked favorites this season
+                  </p>
+                </div>
+                <Link
+                  href="/shop"
+                  className={buttonVariants({
+                    variant: "ghost",
+                    className: "hidden sm:flex",
+                  })}
+                >
+                  View All
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </div>
+            </Reveal>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {featuredProducts.map((product, i) => (
+                <Reveal key={product.id} delay={i * 75} className="h-full">
+                  <ProductCard product={product} />
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Features */}
       <section className="border-y border-border bg-background">
         <Reveal>
@@ -186,43 +223,6 @@ export default async function HomePage() {
           ))}
         </div>
       </section>
-
-      {/* Featured Products */}
-      {featuredProducts.length > 0 && (
-        <section className="bg-secondary/20 py-16">
-          <div className="container mx-auto px-4 md:px-6">
-            <Reveal>
-              <div className="mb-10 flex items-end justify-between">
-                <div>
-                  <h2 className="font-heading text-3xl font-bold">
-                    Featured Pieces
-                  </h2>
-                  <p className="mt-2 font-heading italic text-muted-foreground">
-                    Handpicked favorites this season
-                  </p>
-                </div>
-                <Link
-                  href="/shop"
-                  className={buttonVariants({
-                    variant: "ghost",
-                    className: "hidden sm:flex",
-                  })}
-                >
-                  View All
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </div>
-            </Reveal>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {featuredProducts.map((product, i) => (
-                <Reveal key={product.id} delay={i * 75} className="h-full">
-                  <ProductCard product={product} />
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
     </>
   );
