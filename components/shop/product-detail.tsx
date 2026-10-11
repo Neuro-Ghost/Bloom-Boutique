@@ -342,7 +342,10 @@ export function ProductDetail({ product, relatedProducts }: ProductDetailProps) 
             )}
             {measurements.length > 0 && (
               <div>
-                <dt className="font-medium text-foreground">Measurements</dt>
+                <dt className="font-medium text-foreground">Flat Lay Measurements</dt>
+                <dd className="mt-0.5 text-xs text-muted-foreground">
+                  Measured edge-to-edge on one side
+                </dd>
                 <dd className="mt-2">
                   <ul className="divide-y divide-border rounded-xl border border-border">
                     {measurements.map((row, index) => (

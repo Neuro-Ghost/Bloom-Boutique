@@ -29,6 +29,7 @@ model Product {
   sizes       String   @default("[]")
   colors      String   @default("[]")
   colorImages String?
+  colorHexes  String?
   stock       Int      @default(0)
   variantStock String?
   soldOut     Boolean  @default(false)

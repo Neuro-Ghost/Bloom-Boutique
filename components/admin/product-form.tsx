@@ -21,6 +21,7 @@ import { ImageUpload, resizeImage } from "./image-upload";
 import { TagInput } from "./tag-input";
 import { slugify } from "@/lib/slug";
 import { variantKey } from "@/lib/stock";
+import { resolveSwatch } from "@/lib/colors";
 import { toast } from "sonner";
 import { Plus, Upload, X } from "lucide-react";
 
@@ -46,6 +47,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
     sizes: JSON.parse(product?.sizes || "[]") as string[],
     colors: JSON.parse(product?.colors || "[]") as string[],
     colorImages: JSON.parse(product?.colorImages || "{}") as Record<string, string>,
+    colorHexes: JSON.parse(product?.colorHexes || "{}") as Record<string, string>,
     stock: product?.stock ?? 0,
     variantStock: JSON.parse(product?.variantStock || "{}") as Record<string, number>,
     soldOut: product?.soldOut ?? false,
@@ -94,6 +96,9 @@ export function ProductForm({ product, categories }: ProductFormProps) {
       categoryId: form.categoryId || null,
       colorImages: Object.fromEntries(
         Object.entries(form.colorImages).filter(([c]) => form.colors.includes(c))
+      ),
+      colorHexes: Object.fromEntries(
+        Object.entries(form.colorHexes).filter(([c]) => form.colors.includes(c))
       ),
       variantStock: hasVariants
         ? Object.fromEntries(
@@ -279,6 +284,41 @@ export function ProductForm({ product, categories }: ProductFormProps) {
           />
         </div>
       </div>
+
+      {form.colors.length > 0 && (
+        <div className="space-y-2">
+          <Label>Color swatches</Label>
+          <p className="text-xs text-muted-foreground">
+            Pick the dot color shoppers see on each product card. The default is
+            a best guess from the color name.
+          </p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {form.colors.map((color) => (
+              <div
+                key={color}
+                className="flex items-center gap-3 rounded-xl border px-3 py-2"
+              >
+                <input
+                  type="color"
+                  value={resolveSwatch(color, form.colorHexes)}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      colorHexes: {
+                        ...form.colorHexes,
+                        [color]: e.target.value,
+                      },
+                    })
+                  }
+                  className="h-8 w-8 shrink-0 cursor-pointer rounded-md border border-black/10 p-0.5"
+                  aria-label={`Swatch color for ${color}`}
+                />
+                <span className="text-sm">{color}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {hasVariants && (
         <div className="space-y-3">

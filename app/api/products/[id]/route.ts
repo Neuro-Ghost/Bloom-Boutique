@@ -15,6 +15,7 @@ const productSchema = z.object({
   sizes: z.array(z.string()).optional(),
   colors: z.array(z.string()).optional(),
   colorImages: z.record(z.string(), z.string()).optional().nullable(),
+  colorHexes: z.record(z.string(), z.string()).optional().nullable(),
   stock: z.number().int().min(0).optional(),
   variantStock: z.record(z.string(), z.number().int().min(0)).optional().nullable(),
   soldOut: z.boolean().optional(),
@@ -77,6 +78,7 @@ export async function PATCH(
       sizes,
       colors,
       colorImages,
+      colorHexes,
       variantStock,
       measurements,
       ...rest
@@ -103,6 +105,9 @@ export async function PATCH(
     if (colors !== undefined) data.colors = JSON.stringify(colors);
     if (colorImages !== undefined) {
       data.colorImages = colorImages ? JSON.stringify(colorImages) : null;
+    }
+    if (colorHexes !== undefined) {
+      data.colorHexes = colorHexes ? JSON.stringify(colorHexes) : null;
     }
     if (variantStock !== undefined) {
       data.variantStock = variantStock ? JSON.stringify(variantStock) : null;

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Product, Category } from "@prisma/client";
+import { colorAvailable } from "@/lib/stock";
+import { parseColorHexes, resolveSwatchStyle } from "@/lib/colors";
 
 interface ProductCardProps {
   product: Product & { category: Category | null };
@@ -10,6 +12,14 @@ export function ProductCard({ product }: ProductCardProps) {
   const images = JSON.parse(product.images || "[]") as string[];
   const imageUrl = images[0] || "/placeholder-product.svg";
   const secondUrl = images[1];
+  const colors = JSON.parse(product.colors || "[]") as string[];
+  const sizes = JSON.parse(product.sizes || "[]") as string[];
+  const colorHexes = parseColorHexes(product.colorHexes);
+  const availableColors = colors.filter((c) =>
+    colorAvailable(product, c, sizes)
+  );
+  const visibleColors = availableColors.slice(0, 4);
+  const overflow = availableColors.length - visibleColors.length;
 
   return (
     <Link href={`/product/${product.slug}`} className="group block h-full">
@@ -55,6 +65,21 @@ export function ProductCard({ product }: ProductCardProps) {
           <h3 className="mt-1 font-heading text-base font-semibold text-foreground group-hover:text-primary transition-colors">
             {product.name}
           </h3>
+          {availableColors.length > 0 && (
+            <div className="mt-2 flex items-center gap-1.5">
+              {visibleColors.map((color) => (
+                <span
+                  key={color}
+                  title={color}
+                  className="inline-block h-3.5 w-3.5 rounded-full border border-black/10"
+                  style={resolveSwatchStyle(color, colorHexes)}
+                />
+              ))}
+              {overflow > 0 && (
+                <span className="text-xs text-muted-foreground">+{overflow}</span>
+              )}
+            </div>
+          )}
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <span className="font-medium text-foreground">
               ${product.price.toFixed(2)}
