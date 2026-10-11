@@ -375,8 +375,9 @@ export function ProductForm({ product, categories }: ProductFormProps) {
                               },
                             });
                           }}
-                          className="h-8 w-8 shrink-0 cursor-pointer rounded-md border border-black/10 p-0.5"
+                          className="h-8 w-8 shrink-0 cursor-pointer rounded-md border border-black/10 p-0.5 pointer-events-none"
                           aria-label={`First half color for ${color}`}
+                          tabIndex={-1}
                         />
                         <input
                           type="color"
@@ -391,8 +392,9 @@ export function ProductForm({ product, categories }: ProductFormProps) {
                               },
                             });
                           }}
-                          className="h-8 w-8 shrink-0 cursor-pointer rounded-md border border-black/10 p-0.5"
+                          className="h-8 w-8 shrink-0 cursor-pointer rounded-md border border-black/10 p-0.5 pointer-events-none"
                           aria-label={`Second half color for ${color}`}
+                          tabIndex={-1}
                         />
                       </div>
                       <span className="text-sm flex-1 truncate">{color}</span>
@@ -431,8 +433,9 @@ export function ProductForm({ product, categories }: ProductFormProps) {
                           },
                         })
                       }
-                      className="h-8 w-8 shrink-0 cursor-pointer rounded-md border border-black/10 p-0.5"
+                      className="h-8 w-8 shrink-0 cursor-pointer rounded-md border border-black/10 p-0.5 pointer-events-none"
                       aria-label={`Swatch color for ${color}`}
+                      tabIndex={-1}
                     />
                     <span className="text-sm flex-1 truncate">{color}</span>
                     <button
