@@ -5,6 +5,7 @@ import { getSettings } from "@/lib/settings";
 import { Resend } from "resend";
 import { z } from "zod";
 import { DELIVERY_ZONES } from "@/lib/delivery";
+import { validateCoupon } from "@/lib/coupons";
 
 const escapeHtml = (s: string) =>
   s
@@ -35,6 +36,7 @@ const orderSchema = z.object({
   notes: z.string().optional(),
   items: z.array(orderItemSchema).min(1),
   deliveryZone: z.enum(["beirut", "outside"]),
+  couponCode: z.string().optional(),
 });
 
 export async function GET(request: NextRequest) {
@@ -67,6 +69,20 @@ export async function POST(request: NextRequest) {
     );
     const deliveryFee = DELIVERY_ZONES[parsed.deliveryZone].fee;
 
+    let discountAmount = 0;
+    let couponCode: string | undefined;
+    let couponId: string | undefined;
+
+    if (parsed.couponCode) {
+      const result = await validateCoupon(parsed.couponCode, itemsTotal);
+      if (!result.valid) {
+        return NextResponse.json({ error: result.error }, { status: 400 });
+      }
+      discountAmount = result.coupon.discountAmount;
+      couponCode = result.coupon.code;
+      couponId = result.coupon.id;
+    }
+
     const order = await prisma.order.create({
       data: {
         customerName: parsed.customerName,
@@ -77,7 +93,10 @@ export async function POST(request: NextRequest) {
         notes: parsed.notes,
         deliveryZone: parsed.deliveryZone,
         deliveryFee,
-        total: itemsTotal + deliveryFee,
+        discountAmount,
+        couponCode,
+        couponId,
+        total: itemsTotal - discountAmount + deliveryFee,
         items: {
           create: parsed.items.map((item) => ({
             productId: item.productId,
@@ -112,6 +131,11 @@ export async function POST(request: NextRequest) {
           .join("");
 
         const settings = await getSettings();
+        const discountLine = discountAmount > 0
+          ? `<br/><span style="color:#16a34a">Discount (${escapeHtml(couponCode!)}): -$${discountAmount.toFixed(2)}</span>`
+          : "";
+        const summaryLines = `Subtotal: $${itemsTotal.toFixed(2)}${discountLine}<br/>Delivery (${escapeHtml(DELIVERY_ZONES[parsed.deliveryZone].label)}): $${deliveryFee.toFixed(2)}`;
+
         if (settings.contactEmail) {
           await resend.emails.send({
             from: "Bloom Boutique <orders@bloombyreem.store>",
@@ -124,7 +148,7 @@ export async function POST(request: NextRequest) {
               <table style="width:100%;border-collapse:collapse;border-top:1px solid #eee">
                 ${itemsHtml}
               </table>
-              <p style="text-align:right;color:#555">Subtotal: $${itemsTotal.toFixed(2)}<br/>Delivery (${escapeHtml(DELIVERY_ZONES[parsed.deliveryZone].label)}): $${deliveryFee.toFixed(2)}</p>
+              <p style="text-align:right;color:#555">${summaryLines}</p>
               <p style="text-align:right"><strong>Total: $${order.total.toFixed(2)}</strong></p>
             </div>`,
           });
@@ -142,7 +166,7 @@ export async function POST(request: NextRequest) {
               <table style="width:100%;border-collapse:collapse;border-top:1px solid #eee;margin-top:16px">
                 ${itemsHtml}
               </table>
-              <p style="text-align:right;color:#555">Subtotal: $${itemsTotal.toFixed(2)}<br/>Delivery (${escapeHtml(DELIVERY_ZONES[parsed.deliveryZone].label)}): $${deliveryFee.toFixed(2)}</p>
+              <p style="text-align:right;color:#555">${summaryLines}</p>
               <p style="text-align:right"><strong>Total: $${order.total.toFixed(2)}</strong></p>
               <p style="color:#777;font-size:13px;margin-top:16px">Delivering to: ${escapeHtml(parsed.address)}, ${escapeHtml(parsed.city)}</p>
               <p style="color:#777;font-size:13px">Bloom Boutique · bloombyreem.store</p>

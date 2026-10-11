@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, Wallet } from "lucide-react";
+import { ArrowLeft, Wallet, Tag, X } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,6 +21,13 @@ export default function CheckoutPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deliveryZone, setDeliveryZone] = useState<DeliveryZone | null>(null);
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    code: string;
+    discountPercent: number;
+    discountAmount: number;
+  } | null>(null);
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
   const [form, setForm] = useState({
     customerName: "",
     customerPhone: "",
@@ -31,7 +38,8 @@ export default function CheckoutPage() {
   });
 
   const deliveryFee = deliveryZone ? DELIVERY_ZONES[deliveryZone].fee : 0;
-  const total = subtotal + deliveryFee;
+  const discountAmount = appliedCoupon?.discountAmount || 0;
+  const total = subtotal - discountAmount + deliveryFee;
 
   if (items.length === 0) {
     return (
@@ -50,6 +58,39 @@ export default function CheckoutPage() {
     );
   }
 
+  const applyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    setIsApplyingCoupon(true);
+    try {
+      const response = await fetch("/api/coupons/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: couponCode.trim(), subtotal }),
+      });
+      const data = await response.json();
+      if (!data.valid) {
+        throw new Error(data.error || "Invalid coupon code");
+      }
+      setAppliedCoupon({
+        code: data.coupon.code,
+        discountPercent: data.coupon.discountPercent,
+        discountAmount: data.coupon.discountAmount,
+      });
+      toast.success(`${data.coupon.discountPercent}% discount applied!`);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to apply coupon"
+      );
+    } finally {
+      setIsApplyingCoupon(false);
+    }
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!deliveryZone) {
@@ -65,6 +106,7 @@ export default function CheckoutPage() {
         body: JSON.stringify({
           ...form,
           deliveryZone,
+          couponCode: appliedCoupon?.code,
           items: items.map((item) => ({
             productId: item.productId,
             name: item.name,
@@ -181,6 +223,32 @@ export default function CheckoutPage() {
             <CardContent className="p-6 space-y-4">
               <h2 className="font-heading text-xl font-bold">Delivery Address</h2>
               <div className="space-y-2">
+                <Label>Delivery Zone *</Label>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {(Object.keys(DELIVERY_ZONES) as DeliveryZone[]).map((zone) => {
+                    const selected = deliveryZone === zone;
+                    return (
+                      <button
+                        key={zone}
+                        type="button"
+                        aria-pressed={selected}
+                        onClick={() => setDeliveryZone(zone)}
+                        className={`flex min-h-11 items-center justify-between rounded-xl border px-4 py-2 text-sm transition-all ${
+                          selected
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border bg-white hover:border-primary/50"
+                        }`}
+                      >
+                        <span>{DELIVERY_ZONES[zone].label}</span>
+                        <span className="font-medium">
+                          ${DELIVERY_ZONES[zone].fee.toFixed(2)}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="city">City *</Label>
                 <Input
                   id="city"
@@ -256,37 +324,67 @@ export default function CheckoutPage() {
                   </div>
                 ))}
               </div>
-              <div className="space-y-2">
-                <Label>Delivery Zone *</Label>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {(Object.keys(DELIVERY_ZONES) as DeliveryZone[]).map((zone) => {
-                    const selected = deliveryZone === zone;
-                    return (
-                      <button
-                        key={zone}
-                        type="button"
-                        aria-pressed={selected}
-                        onClick={() => setDeliveryZone(zone)}
-                        className={`flex min-h-11 items-center justify-between rounded-xl border px-4 py-2 text-sm transition-all ${
-                          selected
-                            ? "border-primary bg-primary text-primary-foreground"
-                            : "border-border bg-white hover:border-primary/50"
-                        }`}
-                      >
-                        <span>{DELIVERY_ZONES[zone].label}</span>
-                        <span className="font-medium">
-                          ${DELIVERY_ZONES[zone].fee.toFixed(2)}
-                        </span>
-                      </button>
-                    );
-                  })}
+
+              {appliedCoupon ? (
+                <div className="flex items-center justify-between rounded-xl bg-primary/10 px-3 py-2">
+                  <div className="flex items-center gap-2 text-sm">
+                    <Tag className="h-4 w-4 text-primary" />
+                    <span className="font-medium text-primary">
+                      {appliedCoupon.code}
+                    </span>
+                    <span className="text-muted-foreground">
+                      (-{appliedCoupon.discountPercent}%)
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={removeCoupon}
+                    className="flex h-7 w-7 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-black/5 hover:text-foreground"
+                    aria-label="Remove coupon"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
                 </div>
-              </div>
+              ) : (
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Tag className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      placeholder="Coupon code"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          applyCoupon();
+                        }
+                      }}
+                      className="rounded-xl pl-9"
+                    />
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={applyCoupon}
+                    disabled={isApplyingCoupon || !couponCode.trim()}
+                    className="rounded-full"
+                  >
+                    {isApplyingCoupon ? "..." : "Apply"}
+                  </Button>
+                </div>
+              )}
+
               <Separator />
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Subtotal</span>
                 <span className="font-medium">${subtotal.toFixed(2)}</span>
               </div>
+              {appliedCoupon && (
+                <div className="flex justify-between text-sm text-primary">
+                  <span>Discount ({appliedCoupon.code})</span>
+                  <span>-${appliedCoupon.discountAmount.toFixed(2)}</span>
+                </div>
+              )}
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Delivery</span>
                 <span className="font-medium">
