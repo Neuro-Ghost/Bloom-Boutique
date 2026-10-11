@@ -181,32 +181,6 @@ export default function CheckoutPage() {
             <CardContent className="p-6 space-y-4">
               <h2 className="font-heading text-xl font-bold">Delivery Address</h2>
               <div className="space-y-2">
-                <Label>Delivery Zone *</Label>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {(Object.keys(DELIVERY_ZONES) as DeliveryZone[]).map((zone) => {
-                    const selected = deliveryZone === zone;
-                    return (
-                      <button
-                        key={zone}
-                        type="button"
-                        aria-pressed={selected}
-                        onClick={() => setDeliveryZone(zone)}
-                        className={`flex min-h-11 items-center justify-between rounded-xl border px-4 py-2 text-sm transition-all ${
-                          selected
-                            ? "border-primary bg-primary text-primary-foreground"
-                            : "border-border bg-white hover:border-primary/50"
-                        }`}
-                      >
-                        <span>{DELIVERY_ZONES[zone].label}</span>
-                        <span className="font-medium">
-                          ${DELIVERY_ZONES[zone].fee.toFixed(2)}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-              <div className="space-y-2">
                 <Label htmlFor="city">City *</Label>
                 <Input
                   id="city"
@@ -281,6 +255,32 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                 ))}
+              </div>
+              <div className="space-y-2">
+                <Label>Delivery Zone *</Label>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {(Object.keys(DELIVERY_ZONES) as DeliveryZone[]).map((zone) => {
+                    const selected = deliveryZone === zone;
+                    return (
+                      <button
+                        key={zone}
+                        type="button"
+                        aria-pressed={selected}
+                        onClick={() => setDeliveryZone(zone)}
+                        className={`flex min-h-11 items-center justify-between rounded-xl border px-4 py-2 text-sm transition-all ${
+                          selected
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border bg-white hover:border-primary/50"
+                        }`}
+                      >
+                        <span>{DELIVERY_ZONES[zone].label}</span>
+                        <span className="font-medium">
+                          ${DELIVERY_ZONES[zone].fee.toFixed(2)}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
               <Separator />
               <div className="flex justify-between text-sm">
