@@ -293,7 +293,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
             <div className="flex items-center gap-2 rounded-xl border-2 border-primary bg-primary/5 px-3 py-2">
               <Droplets className="h-4 w-4 text-primary" />
               <span className="text-sm font-medium">
-                Click any image to pick a color for <span className="text-primary">{pickingFor}</span>
+                Click any image to pick {pickingFor.includes(":") ? `the ${pickingFor.endsWith(":0") ? "1st" : "2nd"} color for` : "a color for"} <span className="text-primary">{pickingFor.includes(":") ? pickingFor.slice(0, pickingFor.lastIndexOf(":")) : pickingFor}</span>
               </span>
               <button
                 type="button"
@@ -312,11 +312,26 @@ export function ProductForm({ product, categories }: ProductFormProps) {
                 pickingFor={pickingFor}
                 onPick={(hex) => {
                   if (!pickingFor) return;
-                  setForm((prev) => ({
-                    ...prev,
-                    colorHexes: { ...prev.colorHexes, [pickingFor]: hex },
-                  }));
-                  toast.success(`Picked ${hex} for ${pickingFor}`);
+                  setForm((prev) => {
+                    const colonIdx = pickingFor.lastIndexOf(":");
+                    if (colonIdx > 0) {
+                      const colorName = pickingFor.slice(0, colonIdx);
+                      const idx = parseInt(pickingFor.slice(colonIdx + 1), 10);
+                      const existing = prev.colorHexes[colorName] || "";
+                      const parts = existing.split(",");
+                      parts[idx] = hex;
+                      return {
+                        ...prev,
+                        colorHexes: { ...prev.colorHexes, [colorName]: parts.join(",") },
+                      };
+                    }
+                    return {
+                      ...prev,
+                      colorHexes: { ...prev.colorHexes, [pickingFor]: hex },
+                    };
+                  });
+                  const displayName = pickingFor.includes(":") ? pickingFor.slice(0, pickingFor.lastIndexOf(":")) : pickingFor;
+                  toast.success(`Picked ${hex} for ${displayName}`);
                   setPickingFor(null);
                 }}
               />
@@ -354,14 +369,16 @@ export function ProductForm({ product, categories }: ProductFormProps) {
                 const isDual = /\s*[&]\s*|\s+and\s+/i.test(color);
                 if (isDual) {
                   const [hex1, hex2] = parseDualHexes(color, form.colorHexes);
+                  const pickKey1 = `${color}:0`;
+                  const pickKey2 = `${color}:1`;
                   return (
                     <div
                       key={color}
                       className={`flex items-center gap-3 rounded-xl border px-3 py-2 ${
-                        pickingFor === color ? "border-primary ring-1 ring-primary/30" : ""
+                        pickingFor === pickKey1 || pickingFor === pickKey2 ? "border-primary ring-1 ring-primary/30" : ""
                       }`}
                     >
-                      <div className="flex gap-1.5">
+                      <div className="flex items-center gap-1.5">
                         <input
                           type="color"
                           value={hex1}
@@ -379,6 +396,21 @@ export function ProductForm({ product, categories }: ProductFormProps) {
                           aria-label={`First half color for ${color}`}
                           tabIndex={-1}
                         />
+                        <button
+                          type="button"
+                          onClick={() => setPickingFor(pickingFor === pickKey1 ? null : pickKey1)}
+                          className={`flex items-center gap-1 rounded px-1.5 py-1 text-[10px] font-medium transition-colors ${
+                            pickingFor === pickKey1
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-muted text-muted-foreground hover:bg-muted-foreground/10 hover:text-foreground"
+                          }`}
+                          aria-label={`Pick first color for ${color}`}
+                        >
+                          <Droplets className="h-3 w-3" />
+                          <span>Pick</span>
+                        </button>
+                      </div>
+                      <div className="flex items-center gap-1.5">
                         <input
                           type="color"
                           value={hex2}
@@ -396,21 +428,21 @@ export function ProductForm({ product, categories }: ProductFormProps) {
                           aria-label={`Second half color for ${color}`}
                           tabIndex={-1}
                         />
+                        <button
+                          type="button"
+                          onClick={() => setPickingFor(pickingFor === pickKey2 ? null : pickKey2)}
+                          className={`flex items-center gap-1 rounded px-1.5 py-1 text-[10px] font-medium transition-colors ${
+                            pickingFor === pickKey2
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-muted text-muted-foreground hover:bg-muted-foreground/10 hover:text-foreground"
+                          }`}
+                          aria-label={`Pick second color for ${color}`}
+                        >
+                          <Droplets className="h-3 w-3" />
+                          <span>Pick</span>
+                        </button>
                       </div>
                       <span className="text-sm flex-1 truncate">{color}</span>
-                      <button
-                        type="button"
-                        onClick={() => setPickingFor(pickingFor === color ? null : color)}
-                        className={`shrink-0 flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
-                          pickingFor === color
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-muted text-muted-foreground hover:bg-muted-foreground/10 hover:text-foreground"
-                        }`}
-                        aria-label={`Pick color from image for ${color}`}
-                      >
-                        <Droplets className="h-3.5 w-3.5" />
-                        <span>Pick</span>
-                      </button>
                     </div>
                   );
                 }
