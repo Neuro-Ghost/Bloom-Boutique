@@ -30,6 +30,7 @@ model Product {
   colors      String   @default("[]")
   colorImages String?
   colorHexes  String?
+  showColorDots Boolean @default(true)
   stock       Int      @default(0)
   variantStock String?
   soldOut     Boolean  @default(false)

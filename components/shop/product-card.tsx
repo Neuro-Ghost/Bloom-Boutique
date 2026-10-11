@@ -65,7 +65,7 @@ export function ProductCard({ product }: ProductCardProps) {
           <h3 className="mt-1 font-heading text-base font-semibold text-foreground group-hover:text-primary transition-colors">
             {product.name}
           </h3>
-          {availableColors.length > 0 && (
+          {product.showColorDots && availableColors.length > 0 && (
             <div className="mt-2 flex items-center gap-1.5">
               {visibleColors.map((color) => (
                 <span

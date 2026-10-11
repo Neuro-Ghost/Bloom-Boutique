@@ -21,7 +21,7 @@ import { ImageUpload, resizeImage } from "./image-upload";
 import { TagInput } from "./tag-input";
 import { slugify } from "@/lib/slug";
 import { variantKey } from "@/lib/stock";
-import { resolveSwatch } from "@/lib/colors";
+import { resolveSwatch, parseDualHexes } from "@/lib/colors";
 import { toast } from "sonner";
 import { Plus, Upload, X } from "lucide-react";
 
@@ -48,6 +48,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
     colors: JSON.parse(product?.colors || "[]") as string[],
     colorImages: JSON.parse(product?.colorImages || "{}") as Record<string, string>,
     colorHexes: JSON.parse(product?.colorHexes || "{}") as Record<string, string>,
+    showColorDots: product?.showColorDots ?? true,
     stock: product?.stock ?? 0,
     variantStock: JSON.parse(product?.variantStock || "{}") as Record<string, number>,
     soldOut: product?.soldOut ?? false,
@@ -286,37 +287,100 @@ export function ProductForm({ product, categories }: ProductFormProps) {
       </div>
 
       {form.colors.length > 0 && (
-        <div className="space-y-2">
-          <Label>Color swatches</Label>
-          <p className="text-xs text-muted-foreground">
-            Pick the dot color shoppers see on each product card. The default is
-            a best guess from the color name.
-          </p>
-          <div className="grid gap-2 sm:grid-cols-2">
-            {form.colors.map((color) => (
-              <div
-                key={color}
-                className="flex items-center gap-3 rounded-xl border px-3 py-2"
-              >
-                <input
-                  type="color"
-                  value={resolveSwatch(color, form.colorHexes)}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      colorHexes: {
-                        ...form.colorHexes,
-                        [color]: e.target.value,
-                      },
-                    })
-                  }
-                  className="h-8 w-8 shrink-0 cursor-pointer rounded-md border border-black/10 p-0.5"
-                  aria-label={`Swatch color for ${color}`}
-                />
-                <span className="text-sm">{color}</span>
-              </div>
-            ))}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <Label>Color swatches</Label>
+              <p className="text-xs text-muted-foreground">
+                Pick the dot color shoppers see on each product card. The default is
+                a best guess from the color name.
+              </p>
+            </div>
+            <label className="flex items-center gap-2 shrink-0">
+              <Checkbox
+                checked={form.showColorDots}
+                onCheckedChange={(checked) =>
+                  setForm({ ...form, showColorDots: checked === true })
+                }
+              />
+              <span className="text-sm">Show dots</span>
+            </label>
           </div>
+          {form.showColorDots && (
+            <div className="grid gap-2 sm:grid-cols-2">
+              {form.colors.map((color) => {
+                const isDual = /\s*[&]\s*|\s+and\s+/i.test(color);
+                if (isDual) {
+                  const [hex1, hex2] = parseDualHexes(color, form.colorHexes);
+                  return (
+                    <div
+                      key={color}
+                      className="flex items-center gap-3 rounded-xl border px-3 py-2"
+                    >
+                      <div className="flex gap-1.5">
+                        <input
+                          type="color"
+                          value={hex1}
+                          onChange={(e) => {
+                            const [, h2] = parseDualHexes(color, form.colorHexes);
+                            setForm({
+                              ...form,
+                              colorHexes: {
+                                ...form.colorHexes,
+                                [color]: `${e.target.value},${h2}`,
+                              },
+                            });
+                          }}
+                          className="h-8 w-8 shrink-0 cursor-pointer rounded-md border border-black/10 p-0.5"
+                          aria-label={`First half color for ${color}`}
+                        />
+                        <input
+                          type="color"
+                          value={hex2}
+                          onChange={(e) => {
+                            const [h1] = parseDualHexes(color, form.colorHexes);
+                            setForm({
+                              ...form,
+                              colorHexes: {
+                                ...form.colorHexes,
+                                [color]: `${h1},${e.target.value}`,
+                              },
+                            });
+                          }}
+                          className="h-8 w-8 shrink-0 cursor-pointer rounded-md border border-black/10 p-0.5"
+                          aria-label={`Second half color for ${color}`}
+                        />
+                      </div>
+                      <span className="text-sm">{color}</span>
+                    </div>
+                  );
+                }
+                return (
+                  <div
+                    key={color}
+                    className="flex items-center gap-3 rounded-xl border px-3 py-2"
+                  >
+                    <input
+                      type="color"
+                      value={resolveSwatch(color, form.colorHexes)}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          colorHexes: {
+                            ...form.colorHexes,
+                            [color]: e.target.value,
+                          },
+                        })
+                      }
+                      className="h-8 w-8 shrink-0 cursor-pointer rounded-md border border-black/10 p-0.5"
+                      aria-label={`Swatch color for ${color}`}
+                    />
+                    <span className="text-sm">{color}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 

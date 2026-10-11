@@ -16,6 +16,7 @@ const productSchema = z.object({
   colors: z.array(z.string()).default([]),
   colorImages: z.record(z.string(), z.string()).optional(),
   colorHexes: z.record(z.string(), z.string()).optional(),
+  showColorDots: z.boolean().default(true),
   stock: z.number().int().min(0).default(0),
   variantStock: z.record(z.string(), z.number().int().min(0)).optional().nullable(),
   soldOut: z.boolean().default(false),

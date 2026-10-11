@@ -49,9 +49,30 @@ export function resolveSwatchStyle(
 ): { background?: string; backgroundColor?: string } {
   const parts = color.split(/\s*[&]\s*|\s+and\s+/i).map((s) => s.trim()).filter(Boolean);
   if (parts.length === 2) {
-    const c1 = resolveSwatch(parts[0], colorHexes);
-    const c2 = resolveSwatch(parts[1], colorHexes);
-    return { background: `linear-gradient(135deg, ${c1} 50%, ${c2} 50%)` };
+    const stored = colorHexes?.[color];
+    let c1: string, c2: string;
+    if (stored && stored.includes(",")) {
+      const [h1, h2] = stored.split(",").map((h) => h.trim());
+      c1 = h1 || resolveSwatch(parts[0], colorHexes);
+      c2 = h2 || resolveSwatch(parts[1], colorHexes);
+    } else {
+      c1 = resolveSwatch(parts[0], colorHexes);
+      c2 = resolveSwatch(parts[1], colorHexes);
+    }
+    return { background: `conic-gradient(from 0deg, ${c1} 0deg 180deg, ${c2} 180deg 360deg)` };
   }
   return { backgroundColor: resolveSwatch(color, colorHexes) };
+}
+
+export function parseDualHexes(
+  color: string,
+  colorHexes: Record<string, string> | null | undefined,
+): [string, string] {
+  const parts = color.split(/\s*[&]\s*|\s+and\s+/i).map((s) => s.trim()).filter(Boolean);
+  const stored = colorHexes?.[color];
+  if (stored && stored.includes(",")) {
+    const [h1, h2] = stored.split(",").map((h) => h.trim());
+    return [h1 || resolveSwatch(parts[0] ?? color, colorHexes), h2 || resolveSwatch(parts[1] ?? color, colorHexes)];
+  }
+  return [resolveSwatch(parts[0] ?? color, colorHexes), resolveSwatch(parts[1] ?? color, colorHexes)];
 }

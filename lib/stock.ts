@@ -8,7 +8,13 @@ export function variantKey(size?: string, color?: string) {
 
 /** False for products that have never been given a variant grid, which keeps them behaving exactly as before. */
 export function tracksVariants(product: VariantStocked) {
-  return product.variantStock !== null;
+  if (product.variantStock === null) return false;
+  try {
+    const parsed = JSON.parse(product.variantStock);
+    return parsed && typeof parsed === "object" && Object.keys(parsed).length > 0;
+  } catch {
+    return false;
+  }
 }
 
 export function parseVariantStock(product: VariantStocked): Record<string, number> {
