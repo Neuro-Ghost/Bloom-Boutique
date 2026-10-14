@@ -44,54 +44,52 @@ export default async function HomePage() {
       <section className="relative overflow-hidden bg-secondary/50">
         <div className="container mx-auto px-4 py-8 md:px-6 md:py-28">
           <div className="grid items-center gap-6 lg:grid-cols-2 lg:gap-12">
-            <div className="order-2 lg:order-1">
-              <div className="space-y-4 text-center lg:text-left">
-                <span className="inline-block animate-in fade-in slide-in-from-bottom-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary duration-500">
-                  New Collection
-                </span>
-                <h1
-                  className="animate-in fade-in slide-in-from-bottom-4 font-heading text-3xl font-bold leading-tight text-foreground duration-700 md:text-5xl lg:text-6xl"
-                  style={{ animationDelay: "100ms" }}
+            <div className="space-y-3 text-center lg:text-left">
+              <span className="inline-block animate-in fade-in slide-in-from-bottom-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary duration-500">
+                New Collection
+              </span>
+              <h1
+                className="animate-in fade-in slide-in-from-bottom-4 font-heading text-3xl font-bold leading-tight text-foreground duration-700 md:text-5xl lg:text-6xl"
+                style={{ animationDelay: "100ms" }}
+              >
+                Dress Modestly,
+                <br />
+                <span className="italic text-primary">Bloom Beautifully</span>
+              </h1>
+              <p
+                className="mx-auto max-w-md animate-in fade-in slide-in-from-bottom-4 text-sm text-muted-foreground duration-700 lg:mx-0"
+                style={{ animationDelay: "200ms" }}
+              >
+                {settings.storeTagline}. Elegant, feminine pieces designed for
+                the modern woman who values grace and modesty.
+              </p>
+              <div
+                className="flex animate-in fade-in slide-in-from-bottom-4 flex-col gap-2 duration-700 sm:flex-row sm:justify-center lg:justify-start"
+                style={{ animationDelay: "300ms" }}
+              >
+                <Link
+                  href="/shop"
+                  className={buttonVariants({
+                    size: "default",
+                    className: "w-full rounded-full sm:w-auto",
+                  })}
                 >
-                  Dress Modestly,
-                  <br />
-                  <span className="italic text-primary">Bloom Beautifully</span>
-                </h1>
-                <p
-                  className="mx-auto max-w-md animate-in fade-in slide-in-from-bottom-4 text-sm text-muted-foreground duration-700 lg:mx-0"
-                  style={{ animationDelay: "200ms" }}
+                  Shop Now
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+                <Link
+                  href="/about"
+                  className={buttonVariants({
+                    variant: "outline",
+                    size: "default",
+                    className: "w-full rounded-full border-primary/30 sm:w-auto",
+                  })}
                 >
-                  {settings.storeTagline}. Elegant, feminine pieces designed for
-                  the modern woman who values grace and modesty.
-                </p>
-                <div
-                  className="flex animate-in fade-in slide-in-from-bottom-4 flex-col gap-2 duration-700 sm:flex-row sm:justify-center lg:justify-start"
-                  style={{ animationDelay: "300ms" }}
-                >
-                  <Link
-                    href="/shop"
-                    className={buttonVariants({
-                      size: "default",
-                      className: "w-full rounded-full sm:w-auto",
-                    })}
-                  >
-                    Shop Now
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                  <Link
-                    href="/about"
-                    className={buttonVariants({
-                      variant: "outline",
-                      size: "default",
-                      className: "w-full rounded-full border-primary/30 sm:w-auto",
-                    })}
-                  >
-                    Our Story
-                  </Link>
-                </div>
+                  Our Story
+                </Link>
               </div>
             </div>
-            <div className="order-1 lg:order-2 relative mx-auto w-full max-w-md lg:max-w-full">
+            <div className="relative mx-auto w-full max-w-md lg:max-w-full">
               <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 blur-3xl" />
               <div className="relative">
                 <SaleSlider products={saleProducts} />
