@@ -6,6 +6,7 @@ import { Resend } from "resend";
 import { z } from "zod";
 import { DELIVERY_ZONES } from "@/lib/delivery";
 import { validateCoupon } from "@/lib/coupons";
+import { ordersLimiter, getIP } from "@/lib/ratelimit";
 
 const escapeHtml = (s: string) =>
   s
@@ -59,6 +60,23 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  if (ordersLimiter) {
+    const ip = getIP(request);
+    const { success, reset } = await ordersLimiter.limit(ip);
+    if (!success) {
+      return new NextResponse(
+        JSON.stringify({ error: "Too many requests, please try again later" }),
+        {
+          status: 429,
+          headers: {
+            "Content-Type": "application/json",
+            "Retry-After": String(Math.ceil((reset - Date.now()) / 1000)),
+          },
+        }
+      );
+    }
+  }
+
   try {
     const body = await request.json();
     const parsed = orderSchema.parse(body);

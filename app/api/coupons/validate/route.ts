@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { validateCoupon } from "@/lib/coupons";
+import { couponLimiter, getIP } from "@/lib/ratelimit";
 import { z } from "zod";
 
 const schema = z.object({
@@ -8,6 +9,23 @@ const schema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  if (couponLimiter) {
+    const ip = getIP(request);
+    const { success, reset } = await couponLimiter.limit(ip);
+    if (!success) {
+      return new NextResponse(
+        JSON.stringify({ valid: false, error: "Too many requests, please try again later" }),
+        {
+          status: 429,
+          headers: {
+            "Content-Type": "application/json",
+            "Retry-After": String(Math.ceil((reset - Date.now()) / 1000)),
+          },
+        }
+      );
+    }
+  }
+
   try {
     const body = await request.json();
     const { code, subtotal } = schema.parse(body);
