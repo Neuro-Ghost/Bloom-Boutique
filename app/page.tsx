@@ -42,14 +42,14 @@ export default async function HomePage() {
     <>
       {/* Hero */}
       <section className="relative overflow-hidden bg-secondary/50">
-        <div className="container mx-auto px-4 py-12 md:px-6 md:py-28">
-          <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
-            <div className="space-y-6 text-center lg:text-left">
-              <span className="inline-block animate-in fade-in slide-in-from-bottom-2 rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary duration-500">
+        <div className="container mx-auto px-4 py-8 md:px-6 md:py-28">
+          <div className="grid items-center gap-6 lg:grid-cols-2 lg:gap-12">
+            <div className="space-y-4 text-center lg:text-left">
+              <span className="inline-block animate-in fade-in slide-in-from-bottom-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary duration-500">
                 New Collection
               </span>
               <h1
-                className="animate-in fade-in slide-in-from-bottom-4 font-heading text-4xl font-bold leading-tight text-foreground duration-700 md:text-5xl lg:text-6xl"
+                className="animate-in fade-in slide-in-from-bottom-4 font-heading text-3xl font-bold leading-tight text-foreground duration-700 md:text-5xl lg:text-6xl"
                 style={{ animationDelay: "100ms" }}
               >
                 Dress Modestly,
@@ -57,20 +57,20 @@ export default async function HomePage() {
                 <span className="italic text-primary">Bloom Beautifully</span>
               </h1>
               <p
-                className="mx-auto max-w-md animate-in fade-in slide-in-from-bottom-4 text-lg text-muted-foreground duration-700 lg:mx-0"
+                className="mx-auto max-w-md animate-in fade-in slide-in-from-bottom-4 text-sm text-muted-foreground duration-700 lg:mx-0"
                 style={{ animationDelay: "200ms" }}
               >
                 {settings.storeTagline}. Elegant, feminine pieces designed for
                 the modern woman who values grace and modesty.
               </p>
               <div
-                className="flex animate-in fade-in slide-in-from-bottom-4 flex-col gap-3 duration-700 sm:flex-row sm:justify-center lg:justify-start"
+                className="flex animate-in fade-in slide-in-from-bottom-4 flex-col gap-2 duration-700 sm:flex-row sm:justify-center lg:justify-start"
                 style={{ animationDelay: "300ms" }}
               >
                 <Link
                   href="/shop"
                   className={buttonVariants({
-                    size: "lg",
+                    size: "default",
                     className: "w-full rounded-full sm:w-auto",
                   })}
                 >
@@ -81,7 +81,7 @@ export default async function HomePage() {
                   href="/about"
                   className={buttonVariants({
                     variant: "outline",
-                    size: "lg",
+                    size: "default",
                     className: "w-full rounded-full border-primary/30 sm:w-auto",
                   })}
                 >
